@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ store.name }} - Loja</title>
+</head>
+<body>
+  <h1>{{ store.name }}</h1>
+  <p>Site (MVP SSR). Este HTML é intencionalmente simples: foco em funcionalidade.</p>
+
+  <h2>Categorias</h2>
+  <ul>
+    {% for c in categories %}
+      <li>{{ c.name }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Produtos</h2>
+  <ul>
+    {% for p in products %}
+      <li>
+        <a href="/site/{{ store.slug }}/p/{{ p.id }}">{{ p.name }}</a>
+        - R$ {{ '%.2f'|format(p.base_price|float) }}
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

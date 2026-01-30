@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product.name }} - {{ store.name }}</title>
+</head>
+<body>
+  <p><a href="/site/{{ store.slug }}">&larr; voltar</a></p>
+  <h1>{{ product.name }}</h1>
+  <p>{{ product.description }}</p>
+  <p>Preço base: R$ {{ '%.2f'|format(product.base_price|float) }}</p>
+
+  <h2>Variantes</h2>
+  <ul>
+    {% for v in product.variants %}
+      <li>{{ v.color }} / {{ v.size }} - R$ {{ '%.2f'|format(v.price) }} (estoque: {{ v.stock }})</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
