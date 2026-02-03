@@ -8,6 +8,7 @@ from pydantic import (
     Field,
     NonNegativeInt,
     PositiveInt,
+    AliasChoices,
     condecimal,
     field_validator,
     field_serializer,
@@ -21,6 +22,23 @@ MoneyNonNegative = condecimal(ge=0, max_digits=10, decimal_places=2)
 class CategoryCreateIn(BaseModel):
     # Optional to preserve previous 400 validations (instead of 422)
     name: str | None = None
+
+
+class CategoryUpdateIn(BaseModel):
+    name: str | None = None
+    parent_id: int | None = Field(default=None, ge=1)
+    is_active: bool | None = None
+    sort_order: int | None = None
+
+    @field_validator("name")
+    @classmethod
+    def _strip_optional_name(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        v = v.strip()
+        if not v:
+            raise ValueError("name must not be empty")
+        return v
 
 
 # Admin input schemas (required fields + constraints)
@@ -46,6 +64,28 @@ class ProductCreateIn(BaseModel):
     description: str = ""
     image_url: str = ""
     is_active: bool = True
+
+
+class ProductUpdateIn(BaseModel):
+    # Optional to preserve previous 400 validations (instead of 422)
+    name: str | None = None
+    title: str | None = None
+    description: str | None = None
+    price: Decimal | float | None = Field(default=None, validation_alias=AliasChoices("price", "base_price"))
+    is_active: bool | None = None
+    category_id: int | None = Field(default=None, ge=1)
+    sku: str | None = None
+    image_url: str | None = None
+
+    @field_validator("name", "title", "sku")
+    @classmethod
+    def _strip_optional_non_empty(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        v = v.strip()
+        if not v:
+            raise ValueError("value must not be empty")
+        return v
 
 
 class ProductCreate(BaseModel):
@@ -96,6 +136,16 @@ class CategoryOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
+    parent_id: int | None = None
+    is_active: bool | None = None
+    sort_order: int | None = None
+
+
+class CategoryTreeOut(CategoryOut):
+    children: list["CategoryTreeOut"] | None = None
+
+
+CategoryTreeOut.model_rebuild()
 
 
 class ProductVariantOut(BaseModel):
@@ -119,7 +169,7 @@ class ProductOut(BaseModel):
     category_id: int
     name: str
     description: str
-    image_url: str
+    image_url: str | None = None
     base_price: Decimal
     is_active: bool
     variants: list[ProductVariantOut]
@@ -135,12 +185,24 @@ class ProductAdminOut(BaseModel):
     id: int
     category_id: int
     name: str
+    image_url: str | None = None
     base_price: Decimal
     is_active: bool
 
     @field_serializer("base_price")
     def _ser_base_price(self, v: Decimal):  # keep public API as JSON number
         return float(v)
+
+
+class ProductDeleteOut(BaseModel):
+    ok: bool
+    mode: str
+    message: str
+
+
+class ProductImageOut(BaseModel):
+    product_id: int
+    image_url: str | None = None
 
 
 class IdOut(BaseModel):

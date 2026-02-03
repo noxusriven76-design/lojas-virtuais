@@ -12,6 +12,7 @@ from app.api.routes import support_chat
 api_v1_router = APIRouter(prefix="/api/v1")
 api_v1_router.include_router(auth.router, tags=["auth"])
 api_v1_router.include_router(public_catalog.router, tags=["catalog"])
+api_v1_router.include_router(public_catalog.store_router, tags=["catalog"])
 api_v1_router.include_router(public_catalog.legacy_router, tags=["catalog"], include_in_schema=False)
 api_v1_router.include_router(shipping.router, tags=["shipping"])
 api_v1_router.include_router(shipping.legacy_router, tags=["shipping"], include_in_schema=False)

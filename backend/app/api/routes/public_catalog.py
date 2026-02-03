@@ -4,9 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_db, get_store_from_path
-from app.repositories.utils import resolve_store
+from app.repositories.utils import get_store_by_slug, resolve_store
 from app.repositories.catalog import list_categories, list_products, get_product
 from app.schemas.catalog import CategoryOut, ProductOut
+from app.schemas.store import StoreOut
 
 
 # ------------------------------
@@ -14,6 +15,7 @@ from app.schemas.catalog import CategoryOut, ProductOut
 #   /api/v1/public/{store_slug}/...
 # ------------------------------
 router = APIRouter(prefix="/public/{store_slug}")
+store_router = APIRouter()
 
 
 @router.get("/categories", response_model=list[CategoryOut])
@@ -96,3 +98,14 @@ def legacy_product_detail(
     if not p:
         raise HTTPException(status_code=404, detail="Product not found")
     return ProductOut.model_validate(p)
+
+
+@store_router.get("/stores/slug/{slug}", response_model=StoreOut)
+def get_store_by_slug_public(
+    slug: str,
+    db: Session = Depends(get_db),
+):
+    store = get_store_by_slug(db, store_slug=slug, active_only=True)
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    return StoreOut.model_validate(store)

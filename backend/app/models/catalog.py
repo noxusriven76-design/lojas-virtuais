@@ -13,12 +13,16 @@ class Category(Base):
 
     __table_args__ = (
         Index("ix_categories_store_name", "store_id", "name"),
+        Index("ix_categories_store_parent", "store_id", "parent_id"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     store_id: Mapped[int] = mapped_column(Integer, ForeignKey("stores.id"), index=True, nullable=False)
+    parent_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("categories.id"), index=True, nullable=True)
 
     name: Mapped[str] = mapped_column(String(80), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
 
 class Product(Base):
@@ -36,7 +40,7 @@ class Product(Base):
 
     name: Mapped[str] = mapped_column(String(180), nullable=False)
     description: Mapped[str] = mapped_column(String(2000), default="", nullable=False)
-    image_url: Mapped[str] = mapped_column(String(500), default="", nullable=False)
+    image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     # Monetary value: avoid float rounding issues.
     base_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)

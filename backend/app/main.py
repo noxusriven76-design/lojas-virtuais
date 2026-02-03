@@ -3,16 +3,19 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.exc import IntegrityError
 
 from app.api.router import api_v1_router, legacy_router, pages_router
 from app.core.config import settings
+from app.core.uploads import ensure_upload_base_dirs
 from app.db.session import SessionLocal
 from app.db.bootstrap import bootstrap
 from app.repositories.utils import StoreContextRequiredError
@@ -176,15 +179,17 @@ def _configure_logging() -> None:
     root.setLevel(level)
     logger.setLevel(level)
 
-# CORS
+# CORS (dev-friendly default for local dashboard)
 origins = [o.strip() for o in (settings.cors_origins or "").split(",") if o.strip()]
+if not origins and settings.env in ("dev", "local"):
+    origins = ["http://localhost:5173"]
 if origins:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type", "X-Requested-With", "X-Request-Id"],
     )
 
 # Public, versioned API (preferred)
@@ -196,6 +201,10 @@ app.include_router(legacy_router)
 # HTML/SSR pages (non-API). Keep out of OpenAPI.
 app.include_router(pages_router, include_in_schema=False)
 
+# Static uploads (local filesystem)
+Path(settings.uploads_dir).mkdir(parents=True, exist_ok=True)
+app.mount(settings.uploads_base_url, StaticFiles(directory=settings.uploads_dir, check_dir=False), name="uploads")
+
 
 @app.get("/health", include_in_schema=False)
 def health():
@@ -206,6 +215,7 @@ def health():
 def on_startup():
     _configure_logging()
     logger.info("Starting API", extra={"env": settings.env, "debug": settings.debug})
+    ensure_upload_base_dirs()
     # Development bootstrap: creates admin@local / admin123 and one sample store.
     if settings.env in ("dev", "local"):
         db = SessionLocal()

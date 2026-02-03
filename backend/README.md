@@ -145,6 +145,48 @@ Requer que o usuário seja membro da loja:
 - `POST /api/v1/admin/stores/{store_id}/products`
 - `POST /api/v1/admin/stores/{store_id}/products/{product_id}/variants`
 
+### Endpoints adicionais do painel (multi-loja)
+- `GET /api/v1/admin/my-stores`
+- `PATCH /api/v1/admin/stores/{store_id}/categories/{category_id}`
+- `DELETE /api/v1/admin/stores/{store_id}/categories/{category_id}`
+- `PATCH /api/v1/admin/stores/{store_id}/products/{product_id}`
+- `DELETE /api/v1/admin/stores/{store_id}/products/{product_id}`
+- `POST /api/v1/admin/stores/{store_id}/products/{product_id}/image` (multipart)
+- `DELETE /api/v1/admin/stores/{store_id}/products/{product_id}/image`
+- `POST /api/v1/admin/stores/{store_id}/logo` (multipart)
+- `DELETE /api/v1/admin/stores/{store_id}/logo`
+- `GET /api/v1/admin/stores/{store_id}/customers`
+
+### Exemplos r?pidos
+`GET /api/v1/admin/my-stores`
+```json
+[
+  { "store_id": 1, "name": "Roupas", "slug": "roupas", "role": "manager" }
+]
+```
+
+`POST /api/v1/admin/stores/1/products/10/image` (multipart)
+```json
+{ "product_id": 10, "image_url": "/static/uploads/products/10/7a1f....png" }
+```
+
+`POST /api/v1/admin/stores/1/logo` (multipart)
+```json
+{ "store_id": 1, "logo_url": "/static/uploads/stores/1/52ab....webp" }
+```
+
+`GET /api/v1/admin/stores/1/customers?limit=20&offset=0`
+```json
+{
+  "items": [
+    { "id": 7, "name": "Ana", "email": "ana@mail.com", "phone": "11999999999", "created_at": "2026-02-03T10:00:00", "total_orders": 3 }
+  ],
+  "total": 1,
+  "limit": 20,
+  "offset": 0
+}
+```
+
 ## 9) Site HTML SSR (MVP)
 - `GET /site/{store_slug}`
 - `GET /site/{store_slug}/p/{product_id}`

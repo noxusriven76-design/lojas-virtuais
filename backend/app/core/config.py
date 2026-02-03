@@ -1,5 +1,10 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings
 from pydantic import Field
+
+
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
@@ -14,6 +19,9 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = Field(default=60, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
 
     cors_origins: str = Field(default="", alias="CORS_ORIGINS")
+    uploads_dir: str = Field(default=str(BACKEND_ROOT / "uploads"), alias="UPLOADS_DIR")
+    uploads_base_url: str = Field(default="/static/uploads", alias="UPLOADS_BASE_URL")
+    uploads_max_size_bytes: int = Field(default=5 * 1024 * 1024, alias="UPLOADS_MAX_SIZE_BYTES")
 
     class Config:
         env_file = ".env"
