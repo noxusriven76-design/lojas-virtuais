@@ -52,16 +52,16 @@ class Coupon(Base):
 class CouponRedemption(Base):
     __tablename__ = "coupon_redemptions"
     __table_args__ = (
-        Index("ix_coupon_redemptions_coupon_customer", "coupon_id", "customer_id"),
+        Index("ix_coupon_redemptions_coupon_user", "coupon_id", "user_id"),
         Index("ix_coupon_redemptions_order", "order_id"),
-        Index("ix_coupon_redemptions_store_customer", "store_id", "customer_id"),
+        Index("ix_coupon_redemptions_store_user", "store_id", "user_id"),
         Index("ix_coupon_redemptions_store_coupon", "store_id", "coupon_id"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     store_id: Mapped[int] = mapped_column(Integer, ForeignKey("stores.id"), index=True, nullable=False)
     coupon_id: Mapped[int] = mapped_column(Integer, ForeignKey("coupons.id"), index=True, nullable=False)
-    customer_id: Mapped[int] = mapped_column(Integer, ForeignKey("customers.id"), index=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), index=True, nullable=False)
 
     # One redemption per order. Null allowed for "validation-only" flows if needed later.
     order_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("orders.id"), nullable=True)

@@ -97,7 +97,7 @@ A API retorna **sempre** o mesmo envelope de erro:
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Usuário master (dev)
+### Usuário admin (dev)
 No `ENV=dev`, o startup cria:
 - email: `admin@local`
 - senha: `admin123`
@@ -126,11 +126,16 @@ Catálogo público (store no path):
 Por um período curto, os mesmos endpoints **sem** `/api/v1` continuam funcionando (por ex.: `GET /categories`).
 Eles estão **fora do OpenAPI/Swagger** e devem ser tratados como **deprecated**.
 
-## 7) Multi-loja (master)
+## 7) Admin (multi-loja)
 Requer token de superuser:
-- `GET /api/v1/master/stores`
-- `POST /api/v1/master/stores`
-- `POST /api/v1/master/stores/{store_id}/members`
+- `GET /api/v1/admin/stores`
+- `POST /api/v1/admin/stores`
+- `GET /api/v1/admin/users`
+
+Gerenciar acessos por loja (requer store manager ou superuser):
+- `GET /api/v1/admin/stores/{store_id}/members`
+- `POST /api/v1/admin/stores/{store_id}/members`
+- `DELETE /api/v1/admin/stores/{store_id}/members/{user_id}`
 
 ## 8) Painel / Admin do lojista (MVP)
 Requer que o usuário seja membro da loja:

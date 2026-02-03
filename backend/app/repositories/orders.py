@@ -9,10 +9,10 @@ from app.models.order import Order, OrderItem
 from app.repositories.coupons import validate_coupon, redeem_coupon
 
 
-def list_orders(db: Session, store_id: int, customer_id: int, limit: int = 20, offset: int = 0) -> list[Order]:
+def list_orders(db: Session, store_id: int, user_id: int, limit: int = 20, offset: int = 0) -> list[Order]:
     return (
         db.query(Order)
-        .filter(Order.store_id == store_id, Order.customer_id == customer_id)
+        .filter(Order.store_id == store_id, Order.user_id == user_id)
         .order_by(Order.id.desc())
         .limit(limit)
         .offset(offset)
@@ -20,15 +20,15 @@ def list_orders(db: Session, store_id: int, customer_id: int, limit: int = 20, o
     )
 
 
-def get_order(db: Session, store_id: int, customer_id: int, order_id: int) -> Order | None:
+def get_order(db: Session, store_id: int, user_id: int, order_id: int) -> Order | None:
     return (
         db.query(Order)
-        .filter(Order.store_id == store_id, Order.customer_id == customer_id, Order.id == order_id)
+        .filter(Order.store_id == store_id, Order.user_id == user_id, Order.id == order_id)
         .first()
     )
 
 
-def create_order(db: Session, store_id: int, customer_id: int, payload: dict) -> Order:
+def create_order(db: Session, store_id: int, user_id: int, payload: dict) -> Order:
     items_in = payload["items"]
     addr = payload["address"]
 
@@ -107,7 +107,7 @@ def create_order(db: Session, store_id: int, customer_id: int, payload: dict) ->
                 store_id=store_id,
                 code=str(coupon_code),
                 subtotal=subtotal,
-                customer_id=customer_id,
+                user_id=user_id,
                 lock_for_update=True,
             )
             if not res.valid or not res.coupon:
@@ -124,7 +124,7 @@ def create_order(db: Session, store_id: int, customer_id: int, payload: dict) ->
 
         o = Order(
             store_id=store_id,
-            customer_id=customer_id,
+            user_id=user_id,
             coupon_id=coupon.id if coupon else None,
             coupon_code=(coupon.code if coupon else ""),
             status="created",
@@ -153,7 +153,7 @@ def create_order(db: Session, store_id: int, customer_id: int, payload: dict) ->
                 db,
                 store_id=store_id,
                 coupon=coupon,
-                customer_id=customer_id,
+                user_id=user_id,
                 order_id=o.id,
                 subtotal=subtotal,
                 discount=discount,

@@ -10,7 +10,10 @@
     determinísticos (slugify(name + '-' + id)) para manter URLs estáveis.
 */
 
-const LV = (window.LV_CONFIG || { STORE_SLUG: 'roupas', API_BASE_URL: 'http://localhost:8000/api/v1', USE_MOCK_DATA: false });
+import { LV_CONFIG } from './config.js';
+import { apiGet, apiPost } from './core/apiClient.js';
+
+const LV = (window.LV_CONFIG || LV_CONFIG || { STORE_SLUG: 'roupas', API_BASE_URL: 'http://localhost:8000/api/v1', USE_MOCK_DATA: false });
 
 const STORE = { id: 1, slug: LV.STORE_SLUG, name: 'Loja de Roupas', legalName: 'Loja de Roupas LTDA', url: 'https://www.sualoja.com', currency: 'BRL', country: 'BR' };
 
@@ -1907,24 +1910,11 @@ function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 // ---------------------------------------------------------------------------
 
 async function _fetchJson(url, {method='GET', body=null}={}){
-  const headers = { 'Accept':'application/json' };
-  if(body) headers['Content-Type'] = 'application/json; charset=utf-8';
-
-  const res = await fetch(url, { method, headers, body: body ? JSON.stringify(body) : null });
-  const text = await res.text();
-  let json;
-  try{ json = text ? JSON.parse(text) : null; }
-  catch(_){ json = text; }
-
-  if(!res.ok){
-    const msg = (json && json.error && json.error.message) ? json.error.message
-      : (json && json.detail) ? json.detail
-      : ('HTTP ' + res.status);
-    const requestId = (json && json.error && json.error.request_id) ? json.error.request_id : res.headers.get('x-request-id');
-    const detail = requestId ? `${msg} (ref: ${requestId})` : msg;
-    throw new Error(detail);
+  // Compat: mantemos a assinatura antiga, mas agora delegamos ao apiClient.
+  if(String(method).toUpperCase() === 'POST'){
+    return apiPost(url, body);
   }
-  return json;
+  return apiGet(url);
 }
 
 async function _loadCatalogFromApi(){
@@ -2038,3 +2028,40 @@ async function ensureCatalogLoaded(){
   }
   return _runtimeCatalogPromise;
 }
+
+// ---------------------------------------------------------------------------
+// Exports (ES Modules)
+// ---------------------------------------------------------------------------
+
+export {
+  STORE,
+  formatBRL,
+  getCategoryBySlug,
+  getCategoryById,
+  getProductBySlug,
+  getProductById,
+  getActiveProducts,
+  getPrimaryPrice,
+  getVariantOptions,
+  findVariant,
+  getProductUrl,
+  getCategoryUrl,
+  clamp,
+  ensureCatalogLoaded,
+};
+
+// Compatibilidade: alguns scripts antigos usam globais.
+window.STORE = STORE;
+window.formatBRL = formatBRL;
+window.getCategoryBySlug = getCategoryBySlug;
+window.getCategoryById = getCategoryById;
+window.getProductBySlug = getProductBySlug;
+window.getProductById = getProductById;
+window.getActiveProducts = getActiveProducts;
+window.getPrimaryPrice = getPrimaryPrice;
+window.getVariantOptions = getVariantOptions;
+window.findVariant = findVariant;
+window.getProductUrl = getProductUrl;
+window.getCategoryUrl = getCategoryUrl;
+window.clamp = clamp;
+window.ensureCatalogLoaded = ensureCatalogLoaded;

@@ -14,13 +14,14 @@ class Order(Base):
 
     __table_args__ = (
         # Order listing/filtering is store-scoped.
-        Index("ix_orders_store_customer_created", "store_id", "customer_id", "created_at"),
+        Index("ix_orders_store_user_created", "store_id", "user_id", "created_at"),
         Index("ix_orders_store_status_created", "store_id", "status", "created_at"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     store_id: Mapped[int] = mapped_column(Integer, ForeignKey("stores.id"), index=True, nullable=False)
-    customer_id: Mapped[int] = mapped_column(Integer, ForeignKey("customers.id"), index=True, nullable=False)
+    # "cliente" = user do sistema (global)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), index=True, nullable=False)
 
     coupon_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("coupons.id"), index=True, nullable=True)
     coupon_code: Mapped[str] = mapped_column(String(40), default="", nullable=False)

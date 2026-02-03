@@ -5,51 +5,51 @@ from sqlalchemy.orm import Session
 
 from app.core.deps import get_db, get_current_user
 from app.repositories.utils import resolve_store
-from app.repositories.customers import get_or_create_customer_for_user
 from app.repositories.orders import list_orders, get_order, create_order
 from app.schemas.order import OrderCreateIn, OrderOut
-from app.models.user import User
 
 router = APIRouter(prefix="/orders")
 
 
 def _serialize_order(o) -> OrderOut:
-    return OrderOut.model_validate({
-        **{
-            "id": o.id,
-            "status": o.status,
-            "created_at": o.created_at.isoformat(),
-            "shipping_service": o.shipping_service,
-            "shipping_price": o.shipping_price,
-            "shipping_eta_days": o.shipping_eta_days,
-            "subtotal": o.subtotal,
-            "discount": o.discount,
-            "total": o.total,
-            "recipient_name": o.recipient_name,
-            "phone": o.phone,
-            "cep": o.cep,
-            "street": o.street,
-            "number": o.number,
-            "complement": o.complement,
-            "neighborhood": o.neighborhood,
-            "city": o.city,
-            "state": o.state,
-        },
-        "items": [
-            {
-                "id": it.id,
-                "product_id": it.product_id,
-                "variant_id": it.variant_id,
-                "quantity": it.quantity,
-                "unit_price": it.unit_price,
-                "line_total": it.line_total,
-                "product_name": it.product_name,
-                "variant_label": it.variant_label,
-                "image_url": it.image_url,
-            }
-            for it in o.items
-        ],
-    })
+    return OrderOut.model_validate(
+        {
+            **{
+                "id": o.id,
+                "status": o.status,
+                "created_at": o.created_at.isoformat(),
+                "shipping_service": o.shipping_service,
+                "shipping_price": o.shipping_price,
+                "shipping_eta_days": o.shipping_eta_days,
+                "subtotal": o.subtotal,
+                "discount": o.discount,
+                "total": o.total,
+                "recipient_name": o.recipient_name,
+                "phone": o.phone,
+                "cep": o.cep,
+                "street": o.street,
+                "number": o.number,
+                "complement": o.complement,
+                "neighborhood": o.neighborhood,
+                "city": o.city,
+                "state": o.state,
+            },
+            "items": [
+                {
+                    "id": it.id,
+                    "product_id": it.product_id,
+                    "variant_id": it.variant_id,
+                    "quantity": it.quantity,
+                    "unit_price": it.unit_price,
+                    "line_total": it.line_total,
+                    "product_name": it.product_name,
+                    "variant_label": it.variant_label,
+                    "image_url": it.image_url,
+                }
+                for it in o.items
+            ],
+        }
+    )
 
 
 @router.get("", response_model=list[OrderOut])
@@ -62,10 +62,7 @@ def get_orders(
     offset: int = Query(default=0, ge=0),
 ):
     store = resolve_store(db, store_id=store_id, store_slug=store_slug)
-    user = db.get(User, user_out.id)
-    customer = get_or_create_customer_for_user(db, store_id=store.id, user=user)
-
-    orders = list_orders(db, store_id=store.id, customer_id=customer.id, limit=limit, offset=offset)
+    orders = list_orders(db, store_id=store.id, user_id=user_out.id, limit=limit, offset=offset)
     return [_serialize_order(o) for o in orders]
 
 
@@ -78,10 +75,7 @@ def get_order_detail(
     store_slug: str | None = Query(default=None),
 ):
     store = resolve_store(db, store_id=store_id, store_slug=store_slug)
-    user = db.get(User, user_out.id)
-    customer = get_or_create_customer_for_user(db, store_id=store.id, user=user)
-
-    o = get_order(db, store_id=store.id, customer_id=customer.id, order_id=order_id)
+    o = get_order(db, store_id=store.id, user_id=user_out.id, order_id=order_id)
     if not o:
         raise HTTPException(status_code=404, detail="Order not found")
     return _serialize_order(o)
@@ -94,14 +88,12 @@ def create_new_order(
     user_out=Depends(get_current_user),
 ):
     store = resolve_store(db, store_id=payload.store_id, store_slug=payload.store_slug)
-    user = db.get(User, user_out.id)
-    customer = get_or_create_customer_for_user(db, store_id=store.id, user=user)
 
     try:
         o = create_order(
             db,
             store_id=store.id,
-            customer_id=customer.id,
+            user_id=user_out.id,
             payload={
                 "items": [it.model_dump() for it in payload.items],
                 "address": payload.address.model_dump(),

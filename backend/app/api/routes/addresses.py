@@ -5,10 +5,8 @@ from sqlalchemy.orm import Session
 
 from app.core.deps import get_db, get_current_user
 from app.repositories.utils import resolve_store
-from app.repositories.customers import get_or_create_customer_for_user
 from app.repositories.addresses import list_addresses, create_address, update_address, delete_address
 from app.schemas.address import AddressCreate, AddressUpdate, AddressOut
-from app.models.user import User
 
 router = APIRouter(prefix="/addresses")
 
@@ -21,10 +19,7 @@ def get_addresses(
     store_slug: str | None = Query(default=None),
 ):
     store = resolve_store(db, store_id=store_id, store_slug=store_slug)
-    user = db.get(User, user_out.id)
-    customer = get_or_create_customer_for_user(db, store_id=store.id, user=user)
-
-    rows = list_addresses(db, store_id=store.id, customer_id=customer.id)
+    rows = list_addresses(db, store_id=store.id, user_id=user_out.id)
     return [AddressOut.model_validate(r) for r in rows]
 
 
@@ -37,11 +32,8 @@ def add_address(
     store_slug: str | None = Query(default=None),
 ):
     store = resolve_store(db, store_id=store_id, store_slug=store_slug)
-    user = db.get(User, user_out.id)
-    customer = get_or_create_customer_for_user(db, store_id=store.id, user=user)
-
-    data = payload.model_dump(exclude={"customer_id"}, exclude_none=True)
-    a = create_address(db, store_id=store.id, customer_id=customer.id, data=data)
+    data = payload.model_dump(exclude_none=True)
+    a = create_address(db, store_id=store.id, user_id=user_out.id, data=data)
     return AddressOut.model_validate(a)
 
 
@@ -55,13 +47,10 @@ def edit_address(
     store_slug: str | None = Query(default=None),
 ):
     store = resolve_store(db, store_id=store_id, store_slug=store_slug)
-    user = db.get(User, user_out.id)
-    customer = get_or_create_customer_for_user(db, store_id=store.id, user=user)
-
     a = update_address(
         db,
         store_id=store.id,
-        customer_id=customer.id,
+        user_id=user_out.id,
         address_id=address_id,
         data=payload.model_dump(exclude_none=True),
     )
@@ -79,10 +68,7 @@ def remove_address(
     store_slug: str | None = Query(default=None),
 ):
     store = resolve_store(db, store_id=store_id, store_slug=store_slug)
-    user = db.get(User, user_out.id)
-    customer = get_or_create_customer_for_user(db, store_id=store.id, user=user)
-
-    ok = delete_address(db, store_id=store.id, customer_id=customer.id, address_id=address_id)
+    ok = delete_address(db, store_id=store.id, user_id=user_out.id, address_id=address_id)
     if not ok:
         raise HTTPException(status_code=404, detail="Address not found")
     return {"ok": True}

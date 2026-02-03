@@ -1,5 +1,10 @@
+import { apiGet, apiPost } from './core/apiClient.js';
+import { createSession } from './core/session.js';
+
 (function(){
   const TOKEN_KEY = 'lv_auth_token_v1';
+  const sess = createSession({ tokenKey: TOKEN_KEY, userKey: 'lv_auth_user_v1' });
+
   const tokenEl = document.getElementById('token');
   const msgEl = document.getElementById('msg');
   const chatBox = document.getElementById('chatBox');
@@ -20,11 +25,6 @@
     statusBox.style.background = isError ? '#fff4f4' : '#fafafa';
   }
 
-  function getToken(){
-    const raw = (localStorage.getItem(TOKEN_KEY) || '').trim();
-    return raw;
-  }
-
   function normalizeToken(raw){
     const v = (raw || '').trim();
     if(!v) return '';
@@ -33,133 +33,124 @@
   }
 
   async function api(path, {method='GET', body=null}={}){
-    const cfg = (window.LV_CONFIG || { API_BASE_URL: (window.__API_BASE_URL__ || 'http://localhost:8000/api/v1') });
-    const base = String(cfg.API_BASE_URL || '').replace(/\/+$/,'');
-    const token = getToken();
-    const headers = { 'Accept':'application/json' };
-    if(body) headers['Content-Type'] = 'application/json; charset=utf-8';
+    const token = sess.getToken();
+    const headers = {};
     if(token) headers['Authorization'] = normalizeToken(token);
 
-    const res = await fetch(base + path, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : null,
-    });
-
-    const text = await res.text();
-    let json;
-    try{ json = text ? JSON.parse(text) : null; }
-    catch(_){ json = text; }
-
-    if(!res.ok){
-      const msg = (json && json.error && json.error.message) ? json.error.message
-        : (json && json.detail) ? json.detail
-        : ('HTTP ' + res.status);
-      const requestId = (json && json.error && json.error.request_id) ? json.error.request_id : res.headers.get('x-request-id');
-      const detail = requestId ? `${msg} (ref: ${requestId})` : msg;
-      throw new Error(detail);
+    if(String(method).toUpperCase() === 'POST'){
+      return apiPost(path, body, { headers });
     }
-    return json;
+    return apiGet(path, null, { headers });
+  }
+
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']+/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c] || c));
   }
 
   function renderMessages(list){
     chatBox.innerHTML = '';
     list.forEach(m => {
-      const isAdmin = (m.sender_role === 'admin');
+      const isUser = (m.sender_role !== 'admin');
       const wrap = document.createElement('div');
       wrap.style.display = 'flex';
-      wrap.style.justifyContent = isAdmin ? 'flex-start' : 'flex-end';
+      wrap.style.justifyContent = isUser ? 'flex-start' : 'flex-end';
 
       const bubble = document.createElement('div');
       bubble.style.maxWidth = '520px';
-      bubble.style.border = '1px solid rgba(0,0,0,.12)';
-      bubble.style.borderRadius = '14px';
-      bubble.style.padding = '12px';
-      bubble.style.background = isAdmin ? 'rgba(0,0,0,.03)' : '#fff';
+      bubble.style.padding = '10px 12px';
+      bubble.style.borderRadius = '12px';
+      bubble.style.background = isUser ? '#fafafa' : '#111';
+      bubble.style.color = isUser ? '#111' : '#fff';
+      bubble.style.border = isUser ? '1px solid #e6e6e6' : '1px solid #111';
 
-      bubble.innerHTML = `<div style="font-size:12px; font-weight:700; color:rgba(0,0,0,.55); margin-bottom:6px">${isAdmin ? 'Admin' : 'Você'}</div>
-                          <div style="white-space:pre-wrap">${escapeHtml(m.body || '')}</div>`;
+      // XSS-safe: apenas texto
+      bubble.textContent = String(m.message || '');
 
       wrap.appendChild(bubble);
       chatBox.appendChild(wrap);
     });
-
-    // scroll to bottom
-    chatBox.parentElement?.scrollIntoView({block:'end'});
+    chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  function escapeHtml(s){
-    return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function refreshMessages(){
+    if(!conversationId) return;
+    try{
+      const data = await api(`/support/conversations/${conversationId}/messages`);
+      const list = Array.isArray(data) ? data : [];
+      if(list.length !== lastCount){
+        lastCount = list.length;
+        renderMessages(list);
+      }
+    }catch(err){
+      showStatus(err?.message || 'Falha ao carregar mensagens.', true);
+    }
   }
 
   async function openConversation(){
-    showStatus('Abrindo conversa…');
-    const data = await api(`/support/${encodeURIComponent(STORE?.slug || '')}/conversations`, {method:'POST'});
-    conversationId = data.id;
-    showStatus('Conversa #' + conversationId + ' • ' + String(data.status || 'open').toUpperCase());
-    await refresh();
-    if(poll) clearInterval(poll);
-    poll = setInterval(refresh, 5000);
-  }
-
-  async function refresh(){
-    if(!conversationId) return;
-    const list = await api(`/support/${encodeURIComponent(STORE?.slug || '')}/conversations/${conversationId}/messages`);
-    if(Array.isArray(list)){
-      renderMessages(list);
-      if(list.length !== lastCount){ lastCount = list.length; }
+    try{
+      const data = await api('/support/conversations', { method:'POST', body:{} });
+      conversationId = data?.id || null;
+      if(!conversationId) throw new Error('Não foi possível abrir a conversa.');
+      showStatus('Conversa #' + conversationId + ' aberta.');
+      lastCount = 0;
+      await refreshMessages();
+      if(poll) clearInterval(poll);
+      poll = setInterval(refreshMessages, 5000);
+    }catch(err){
+      showStatus(err?.message || 'Falha ao abrir conversa.', true);
     }
   }
 
-  async function send(){
+  async function sendMessage(){
+    if(!conversationId){ showStatus('Abra uma conversa primeiro.', true); return; }
     const text = (msgEl.value || '').trim();
     if(!text) return;
-    if(!conversationId){
-      showStatus('Abra uma conversa primeiro.', true);
-      return;
-    }
-    await api(`/support/${encodeURIComponent(STORE?.slug || '')}/conversations/${conversationId}/messages`, {method:'POST', body:{body:text}});
     msgEl.value = '';
-    await refresh();
+    try{
+      await api(`/support/conversations/${conversationId}/messages`, { method:'POST', body:{ message: text } });
+      await refreshMessages();
+    }catch(err){
+      showStatus(err?.message || 'Falha ao enviar mensagem.', true);
+    }
   }
 
-  async function close(){
+  async function closeConversation(){
     if(!conversationId) return;
-    const data = await api(`/support/${encodeURIComponent(STORE?.slug || '')}/conversations/${conversationId}/close`, {method:'POST'});
-    showStatus('Conversa #' + conversationId + ' • ' + String(data.status || 'closed').toUpperCase());
-    if(poll) clearInterval(poll);
+    try{
+      await api(`/support/conversations/${conversationId}/close`, { method:'POST', body:{} });
+      showStatus('Conversa encerrada.');
+      conversationId = null;
+      lastCount = 0;
+      chatBox.innerHTML = '';
+      if(poll) clearInterval(poll);
+    }catch(err){
+      showStatus(err?.message || 'Falha ao encerrar conversa.', true);
+    }
   }
 
-  // init
-  tokenEl.value = localStorage.getItem(TOKEN_KEY) || '';
-
-  btnSaveToken.addEventListener('click', () => {
+  // Init UI
+  tokenEl.value = sess.getToken();
+  btnSaveToken?.addEventListener('click', () => {
     const t = (tokenEl.value || '').trim();
-    localStorage.setItem(TOKEN_KEY, t);
+    sess.setToken(t);
     showStatus(t ? 'Token salvo.' : 'Token removido.');
   });
 
-  btnOpen.addEventListener('click', async () => {
-    try{
-      await openConversation();
-    }catch(e){
-      showStatus(e.message || 'Falha ao abrir conversa.', true);
+  btnOpen?.addEventListener('click', openConversation);
+  btnSend?.addEventListener('click', sendMessage);
+  btnClose?.addEventListener('click', closeConversation);
+
+  msgEl?.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
     }
   });
 
-  btnSend.addEventListener('click', async () => {
-    try{
-      await send();
-    }catch(e){
-      showStatus(e.message || 'Falha ao enviar.', true);
-    }
-  });
-
-  btnClose.addEventListener('click', async () => {
-    try{
-      await close();
-    }catch(e){
-      showStatus(e.message || 'Falha ao encerrar.', true);
-    }
-  });
+  // Mensagem inicial
+  if(!sess.getToken()){
+    showStatus('Cole o token de autenticação acima e clique em “Salvar token”.', false);
+  }
 })();

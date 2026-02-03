@@ -8,19 +8,21 @@
 // ---------------------------------------------------------------------------
 
 // Loja fixa deste front.
-const STORE_SLUG = 'roupas';
+export const STORE_SLUG = 'roupas';
 
 // Base URL da API (inclui /api/v1).
 // Em produção, aponte para o domínio real do backend.
-const API_BASE_URL = (window.__API_BASE_URL__ || 'http://localhost:8000/api/v1');
+export const API_BASE_URL = (window.__API_BASE_URL__ || 'http://localhost:8000/api/v1');
 
 // Mock desativado por padrão. Para depurar offline, sobrescreva em runtime:
 //   window.__USE_MOCK_DATA__ = true;
-const USE_MOCK_DATA = (window.__USE_MOCK_DATA__ === true);
+export const USE_MOCK_DATA = (window.__USE_MOCK_DATA__ === true);
 
-// Exporta para outros scripts.
-window.LV_CONFIG = {
+export const LV_CONFIG = {
   STORE_SLUG,
   API_BASE_URL,
   USE_MOCK_DATA,
 };
+
+// Compatibilidade: o projeto antigo lia do escopo global.
+window.LV_CONFIG = LV_CONFIG;

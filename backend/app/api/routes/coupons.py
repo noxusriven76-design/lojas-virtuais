@@ -7,9 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.deps import get_db, get_current_user_optional, get_store_from_path
 from app.core.permissions import require_store_manager
-from app.models.user import User
 from app.repositories.utils import resolve_store
-from app.repositories.customers import get_or_create_customer_for_user
 from app.repositories.coupons import (
     create_coupon,
     update_coupon,
@@ -43,19 +41,14 @@ def validate_coupon_for_checkout(
     db: Session = Depends(get_db),
     user_out=Depends(get_current_user_optional),
 ):
-    customer_id = None
-    if user_out:
-        user = db.get(User, user_out.id)
-        if user:
-            customer = get_or_create_customer_for_user(db, store_id=store.id, user=user)
-            customer_id = customer.id
+    user_id = user_out.id if user_out else None
 
     res = validate_coupon(
         db,
         store_id=store.id,
         code=payload.code,
         subtotal=Decimal(str(payload.subtotal)),
-        customer_id=customer_id,
+        user_id=user_id,
         lock_for_update=False,
     )
 
@@ -83,19 +76,14 @@ def legacy_validate_coupon_for_checkout(
 ):
     store = resolve_store(db, store_id=payload.store_id, store_slug=payload.store_slug)
 
-    customer_id = None
-    if user_out:
-        user = db.get(User, user_out.id)
-        if user:
-            customer = get_or_create_customer_for_user(db, store_id=store.id, user=user)
-            customer_id = customer.id
+    user_id = user_out.id if user_out else None
 
     res = validate_coupon(
         db,
         store_id=store.id,
         code=payload.code,
         subtotal=Decimal(str(payload.subtotal)),
-        customer_id=customer_id,
+        user_id=user_id,
         lock_for_update=False,
     )
 

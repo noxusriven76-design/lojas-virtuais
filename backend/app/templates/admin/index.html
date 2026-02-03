@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin</title>
+</head>
+<body>
+  <h1>Admin (MVP)</h1>
+  <p>Placeholder HTML. O admin é via API (sem painel separado).</p>
+  <ul>
+    <li>GET /api/v1/admin/stores (superuser)</li>
+    <li>POST /api/v1/admin/stores (superuser)</li>
+    <li>GET /api/v1/admin/users (superuser)</li>
+    <li>GET /api/v1/admin/stores/{store_id}/members (store manager)</li>
+    <li>POST /api/v1/admin/stores/{store_id}/members (store manager)</li>
+    <li>DELETE /api/v1/admin/stores/{store_id}/members/{user_id} (store manager)</li>
+    <li>Catálogo: /api/v1/admin/stores/{store_id}/products ...</li>
+  </ul>
+</body>
+</html>

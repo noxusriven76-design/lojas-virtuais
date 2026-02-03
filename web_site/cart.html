@@ -37,6 +37,10 @@
       <img src="assets/img/brand/logo.svg" alt="Aurora Clothing" width="220" height="48">
     </a>
 
+    <button class="icon-btn nav-toggle" type="button" data-drawer-toggle aria-label="Abrir menu" aria-controls="mobile-drawer" aria-expanded="false">
+      <span aria-hidden="true">☰</span>
+    </button>
+
     <nav class="nav" aria-label="Menu principal">
       <a href="category.html?cat=feminino">Feminino</a>
       <a href="category.html?cat=masculino">Masculino</a>
@@ -59,6 +63,24 @@
     </div>
   </div>
 </header>
+
+<div class="drawer-overlay" data-drawer-overlay hidden></div>
+<aside id="mobile-drawer" class="drawer" data-drawer aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="drawer-header">
+    <div class="drawer-title">Menu</div>
+    <button class="icon-btn" type="button" data-drawer-close aria-label="Fechar menu">
+      <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+  <nav class="drawer-nav" aria-label="Links do menu">
+    <a href="index.html">Home</a>
+    <a href="category.html">Categorias</a>
+    <a href="support.html">Suporte</a>
+    <a href="contact.html">Contato</a>
+    <a href="account.html" aria-label="Minha conta (placeholder)">Minha Conta</a>
+    <a href="cart.html">Carrinho</a>
+  </nav>
+</aside>
 
 
 <div class="container breadcrumbs" aria-label="Breadcrumb">
@@ -132,10 +154,6 @@
 </script>
 
 
-<script defer src="assets/js/config.js"></script>
-<script defer src="assets/js/products.js"></script>
-<script defer src="assets/js/main.js"></script>
-
-<script defer src="assets/js/cart.js"></script>
+<script type="module" src="assets/js/entry/cartEntry.js"></script>
 </body>
 </html>

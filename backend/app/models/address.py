@@ -10,13 +10,14 @@ class Address(Base):
     __tablename__ = "addresses"
 
     __table_args__ = (
-        Index("ix_addresses_store_customer", "store_id", "customer_id"),
+        Index("ix_addresses_store_user", "store_id", "user_id"),
         Index("ix_addresses_store_default", "store_id", "is_default"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     store_id: Mapped[int] = mapped_column(Integer, ForeignKey("stores.id"), index=True, nullable=False)
-    customer_id: Mapped[int] = mapped_column(Integer, ForeignKey("customers.id"), index=True, nullable=False)
+    # "cliente" = user do sistema (global). Associação com a loja é indireta (store_members).
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), index=True, nullable=False)
 
     label: Mapped[str] = mapped_column(String(80), default="Casa", nullable=False)
     recipient_name: Mapped[str] = mapped_column(String(120), default="", nullable=False)

@@ -28,3 +28,16 @@ def add_member(db: Session, store_id: int, user_id: int, role: str) -> StoreMemb
 def get_member_role(db: Session, store_id: int, user_id: int) -> str | None:
     m = db.query(StoreMember).filter(StoreMember.store_id == store_id, StoreMember.user_id == user_id).first()
     return m.role if m else None
+
+
+def list_members(db: Session, store_id: int) -> list[StoreMember]:
+    return db.query(StoreMember).filter(StoreMember.store_id == store_id).order_by(StoreMember.id.desc()).all()
+
+
+def remove_member(db: Session, store_id: int, user_id: int) -> bool:
+    m = db.query(StoreMember).filter(StoreMember.store_id == store_id, StoreMember.user_id == user_id).first()
+    if not m:
+        return False
+    db.delete(m)
+    db.commit()
+    return True

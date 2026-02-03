@@ -1,8 +1,10 @@
+import { STORE, ensureCatalogLoaded, getActiveProducts } from './products.js';
+import { renderProductCard, bindQuickAdd, setCanonical } from './main.js';
+
 async function renderHome(){
-  if(typeof ensureCatalogLoaded === 'function'){
-    try{ await ensureCatalogLoaded(); } catch(_){ /* fallback */ }
-  }
+  try { await ensureCatalogLoaded(); } catch { /* fallback */ }
   const all = getActiveProducts();
+
   // No backend atual não há "collections". Mantemos o layout usando regras simples.
   const byNew = [...all].sort((a,b) => (b.id||0) - (a.id||0));
   const novidades = all.filter(p => p.collections && p.collections.novidades);

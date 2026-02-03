@@ -1,3 +1,91 @@
+import { safeUrl, setText } from './utils/sanitize.js';
+import { createProductSkeleton, renderSkeletonGrid, renderErrorState, renderEmptyState, createErrorState } from './ui/states.js';
+import {
+  STORE,
+  ensureCatalogLoaded,
+  getActiveProducts,
+  getCategoryById,
+  getCategoryUrl,
+  getProductBySlug,
+  getPrimaryPrice,
+  getVariantOptions,
+  findVariant,
+  formatBRL,
+} from './products.js';
+import {
+  addToCart,
+  toast,
+  setCanonical,
+  updateCartBadge,
+  renderProductCard,
+  bindQuickAdd,
+} from './main.js';
+
+let _catalogReady = false;
+let _productTemplateHtml = null;
+let _renderSeq = 0;
+
+function _paintNextFrame(){
+  return new Promise(resolve => window.requestAnimationFrame(() => resolve()));
+}
+
+function _productRoot(){
+  return document.querySelector('.product');
+}
+
+function _relatedGrid(){
+  return document.querySelector('[data-related]');
+}
+
+function _showProductLoading(){
+  const root = _productRoot();
+  if(!root) return;
+  if(_productTemplateHtml == null) _productTemplateHtml = root.innerHTML;
+  root.setAttribute('aria-busy','true');
+  root.innerHTML = '';
+  root.appendChild(createProductSkeleton());
+  const rel = _relatedGrid();
+  if(rel) renderSkeletonGrid(rel, { count: 4 });
+}
+
+function _restoreProductTemplate(){
+  const root = _productRoot();
+  if(!root || _productTemplateHtml == null) return;
+  root.innerHTML = _productTemplateHtml;
+  root.removeAttribute('aria-busy');
+}
+
+function _showProductError(err){
+  const root = _productRoot();
+  if(!root) return;
+  root.removeAttribute('aria-busy');
+  const msg = err?.message ? `Tente novamente. (${err.message})` : 'Tente novamente.';
+  renderErrorState(root, {
+    title: 'Não foi possível carregar este produto',
+    message: msg,
+    onRetry: () => { _catalogReady = false; renderProductPage(); }
+  });
+  const rel = _relatedGrid();
+  if(rel) rel.innerHTML = '';
+}
+
+function _showProductEmpty(slug){
+  const root = _productRoot();
+  if(!root) return;
+  root.removeAttribute('aria-busy');
+  const suffix = slug ? `“${slug}”` : 'este item';
+  renderEmptyState(root, {
+    title: 'Produto não encontrado',
+    message: `Não encontramos um produto para ${suffix}.`,
+    primaryAction: { label: 'Ver catálogo', href: 'category.html' },
+    secondaryAction: { label: 'Voltar para home', href: 'index.html' }
+  });
+  const rel = _relatedGrid();
+  if(rel) rel.innerHTML = '';
+  const titleEl = document.querySelector('title');
+  if(titleEl) titleEl.textContent = 'Produto não encontrado | Aurora Clothing';
+}
+
 function getProductSlugFromUrl(){
   const u = new URL(window.location.href);
   return u.searchParams.get('slug') || '';
@@ -21,7 +109,14 @@ function renderGallery(product){
   const imgs = product.images && product.images.length ? product.images : [product.image_url];
 
   function select(src, idx){
-    main.innerHTML = `<img src="${src}" alt="${product.name} - imagem principal" loading="eager" width="900" height="1200">`;
+    const img = document.createElement('img');
+    img.src = safeUrl(src, {allowDataImages:true}) || '';
+    img.alt = `${String(product.name || '')} - imagem principal`;
+    img.loading = 'eager';
+    img.width = 900;
+    img.height = 1200;
+    main.innerHTML = '';
+    main.appendChild(img);
     thumbs.querySelectorAll('[data-thumb]').forEach(t => t.setAttribute('aria-current','false'));
     const cur = thumbs.querySelector(`[data-thumb-index="${idx}"]`);
     if(cur) cur.setAttribute('aria-current','true');
@@ -35,7 +130,13 @@ function renderGallery(product){
     b.setAttribute('data-thumb','');
     b.setAttribute('data-thumb-index', String(idx));
     b.setAttribute('aria-current', idx===0 ? 'true':'false');
-    b.innerHTML = `<img src="${src}" alt="Miniatura ${idx+1} de ${product.name}" loading="lazy" width="300" height="400">`;
+    const img = document.createElement('img');
+    img.src = safeUrl(src, {allowDataImages:true}) || '';
+    img.alt = `Miniatura ${idx+1} de ${String(product.name || '')}`;
+    img.loading = 'lazy';
+    img.width = 300;
+    img.height = 400;
+    b.appendChild(img);
     b.addEventListener('click', () => select(src, idx));
     thumbs.appendChild(b);
   });
@@ -204,11 +305,53 @@ function renderRelated(product){
 }
 
 async function renderProductPage(){
-  if(typeof ensureCatalogLoaded === 'function'){
-    try{ await ensureCatalogLoaded(); } catch(_){ /* fallback */ }
+  const seq = ++_renderSeq;
+  _showProductLoading();
+  if(!_catalogReady) await _paintNextFrame();
+
+  let catalogError = null;
+  try{
+    await ensureCatalogLoaded();
+    _catalogReady = true;
+  } catch(e){
+    // Mantém fallback local (STORE) quando disponível.
+    catalogError = e;
   }
+
   const slug = getProductSlugFromUrl();
-  const product = getProductBySlug(slug) || getActiveProducts()[0];
+  const all = getActiveProducts();
+  if(!_catalogReady && all && all.length > 0) _catalogReady = true;
+  const product = slug ? getProductBySlug(slug) : (all[0] || null);
+
+  // Empty / error state
+  if(slug && !product){
+    _restoreProductTemplate();
+    _showProductEmpty(slug);
+    return;
+  }
+  if(!slug && !product){
+    _restoreProductTemplate();
+    if(catalogError) _showProductError(catalogError);
+    else _showProductEmpty('');
+    return;
+  }
+
+  _restoreProductTemplate();
+
+  if(catalogError){
+    const root = _productRoot();
+    if(root){
+      root.prepend(createErrorState({
+        title: 'Dados ao vivo indisponíveis',
+        message: 'Exibindo catálogo offline. Você pode tentar novamente para buscar dados atualizados.',
+        onRetry: () => { _catalogReady = false; renderProductPage(); },
+        retryLabel: 'Tentar novamente',
+        secondaryAction: null
+      }));
+    }
+  }
+
+  try{
 
   // Content
   setText('[data-name]', product.name);
@@ -219,10 +362,11 @@ async function renderProductPage(){
   const titleEl = document.querySelector('title');
   if(titleEl) titleEl.textContent = `${product.name} | Aurora Clothing`;
 
-  setMeta('description', `${product.short_description} Confira detalhes, variações de tamanho/cor, e compra rápida com troca fácil.`);
+  const short = product.short_description || product.description || product.name || 'Produto';
+  setMeta('description', `${short} Confira detalhes, variações de tamanho/cor, e compra rápida com troca fácil.`);
 
   setOg('og:title', `${product.name} | Aurora Clothing`);
-  setOg('og:description', product.short_description);
+  setOg('og:description', short);
   setOg('og:image', `${STORE.url}/${product.image_url}`);
 
   // Canonical deve refletir a página real existente (HTML estático)
@@ -232,11 +376,31 @@ async function renderProductPage(){
   const bc = document.querySelector('[data-breadcrumbs]');
   if(bc){
     const catSlug = getCategoryById(product.category_id)?.slug || 'catalogo';
-    bc.innerHTML = `
-      <a href="index.html">Início</a> <span aria-hidden="true">/</span>
-      <a href="${getCategoryUrl(catSlug)}">${getCategoryById(product.category_id)?.name || product.category}</a> <span aria-hidden="true">/</span>
-      <span aria-current="page">${product.name}</span>
-    `;
+    bc.innerHTML = '';
+    const aHome = document.createElement('a');
+    aHome.href = 'index.html';
+    aHome.textContent = 'Início';
+    bc.appendChild(aHome);
+
+    const sep1 = document.createElement('span');
+    sep1.setAttribute('aria-hidden','true');
+    sep1.textContent = ' / ';
+    bc.appendChild(sep1);
+
+    const aCat = document.createElement('a');
+    aCat.href = safeUrl(getCategoryUrl(catSlug)) || 'category.html';
+    setText(aCat, getCategoryById(product.category_id)?.name || product.category);
+    bc.appendChild(aCat);
+
+    const sep2 = document.createElement('span');
+    sep2.setAttribute('aria-hidden','true');
+    sep2.textContent = ' / ';
+    bc.appendChild(sep2);
+
+    const cur = document.createElement('span');
+    cur.setAttribute('aria-current','page');
+    setText(cur, product.name);
+    bc.appendChild(cur);
   }
 
   // gallery + variants
@@ -283,6 +447,10 @@ async function renderProductPage(){
   const onChange = () => { updateVariant(); };
   colorsWrap?.addEventListener('click', onChange);
   sizesWrap?.addEventListener('click', onChange);
+  } catch(e){
+    if(seq !== _renderSeq) return;
+    _showProductError(e);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => { renderProductPage(); });

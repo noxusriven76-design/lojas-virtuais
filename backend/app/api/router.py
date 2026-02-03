@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.routes import auth, public_catalog, shipping, orders, addresses, favorites
-from app.api.routes import master
+from app.api.routes import admin_access
 from app.api.routes import coupons
 from app.api.routes import admin_catalog
 from app.api.routes import pages
@@ -21,7 +21,7 @@ api_v1_router.include_router(coupons.legacy_router, tags=["coupons"], include_in
 api_v1_router.include_router(coupons.admin_router, tags=["admin"])
 api_v1_router.include_router(addresses.router, tags=["addresses"])
 api_v1_router.include_router(favorites.router, tags=["favorites"])
-api_v1_router.include_router(master.router, tags=["master"])
+api_v1_router.include_router(admin_access.router, tags=["admin"])
 api_v1_router.include_router(admin_catalog.router, tags=["admin"])
 api_v1_router.include_router(support_chat.router, tags=["support"])
 api_v1_router.include_router(support_chat.legacy_router, tags=["support"], include_in_schema=False)
@@ -41,7 +41,7 @@ legacy_router.include_router(coupons.legacy_router, tags=["coupons"], include_in
 legacy_router.include_router(coupons.admin_router, tags=["admin"], include_in_schema=False)
 legacy_router.include_router(addresses.router, tags=["addresses"], include_in_schema=False)
 legacy_router.include_router(favorites.router, tags=["favorites"], include_in_schema=False)
-legacy_router.include_router(master.router, tags=["master"], include_in_schema=False)
+legacy_router.include_router(admin_access.router, tags=["admin"], include_in_schema=False)
 legacy_router.include_router(admin_catalog.router, tags=["admin"], include_in_schema=False)
 legacy_router.include_router(support_chat.legacy_router, tags=["support"], include_in_schema=False)
 

@@ -1,3 +1,6 @@
+import { STORE } from './products.js';
+import { setCanonical, toast } from './main.js';
+
 function validateContact(form){
   const name = form.querySelector('[name="name"]');
   const email = form.querySelector('[name="email"]');
@@ -21,7 +24,6 @@ function validateContact(form){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Canonical deve refletir a página real existente (HTML estático)
   setCanonical(`${STORE.url}/contact.html`);
   const form = document.querySelector('[data-contact-form]');
   if(!form) return;

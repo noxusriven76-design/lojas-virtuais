@@ -145,7 +145,7 @@ def validate_coupon(
     store_id: int,
     code: str,
     subtotal: Decimal,
-    customer_id: int | None = None,
+    user_id: int | None = None,
     *,
     lock_for_update: bool = False,
 ) -> CouponValidationResult:
@@ -178,16 +178,16 @@ def validate_coupon(
     if c.usage_limit_total and c.used_count >= c.usage_limit_total:
         return CouponValidationResult(valid=False, reason="usage_limit_total_reached")
 
-    # Per-user usage limit (requires authenticated customer)
+    # Per-user usage limit (requires authenticated user)
     if c.usage_limit_per_user:
-        if not customer_id:
+        if not user_id:
             return CouponValidationResult(valid=False, reason="login_required")
         used_by_user = (
             db.query(func.count(CouponRedemption.id))
             .filter(
                 CouponRedemption.store_id == store_id,
                 CouponRedemption.coupon_id == c.id,
-                CouponRedemption.customer_id == customer_id,
+                CouponRedemption.user_id == user_id,
             )
             .scalar()
         )
@@ -217,7 +217,7 @@ def redeem_coupon(
     *,
     store_id: int,
     coupon: Coupon,
-    customer_id: int,
+    user_id: int,
     order_id: int,
     subtotal: Decimal,
     discount: Decimal,
@@ -229,7 +229,7 @@ def redeem_coupon(
     r = CouponRedemption(
         store_id=store_id,
         coupon_id=coupon.id,
-        customer_id=customer_id,
+        user_id=user_id,
         order_id=order_id,
         subtotal=Decimal(str(subtotal)).quantize(MONEY_Q, rounding=ROUND_HALF_UP),
         discount_amount=Decimal(str(discount)).quantize(MONEY_Q, rounding=ROUND_HALF_UP),

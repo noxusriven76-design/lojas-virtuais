@@ -33,6 +33,6 @@ def store_product(store_slug: str, product_id: int, request: Request, db: Sessio
     return templates.TemplateResponse("site/product.html", {"request": request, "store": store, "product": p})
 
 
-@router.get("/master")
-def master_home(request: Request):
-    return templates.TemplateResponse("master/index.html", {"request": request})
+@router.get("/admin")
+def admin_home(request: Request):
+    return templates.TemplateResponse("admin/index.html", {"request": request})

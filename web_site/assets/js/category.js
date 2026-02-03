@@ -1,3 +1,37 @@
+import { safeUrl, setText } from './utils/sanitize.js';
+import { renderSkeletonGrid, renderErrorState, renderEmptyState, createErrorState } from './ui/states.js';
+import {
+  STORE,
+  ensureCatalogLoaded,
+  getActiveProducts,
+  getCategoryBySlug,
+  getPrimaryPrice,
+  clamp,
+} from './products.js';
+import { renderProductCard, bindQuickAdd, setCanonical } from './main.js';
+
+let _catalogReady = false;
+let _renderSeq = 0;
+
+function _paintNextFrame(){
+  return new Promise(resolve => window.requestAnimationFrame(() => resolve()));
+}
+
+function _clearAllFilters(){
+  const color = document.querySelector('[data-filter-color]');
+  const size = document.querySelector('[data-filter-size]');
+  const min = document.querySelector('[data-filter-min]');
+  const max = document.querySelector('[data-filter-max]');
+  if(color) color.value='';
+  if(size) size.value='';
+  if(min) min.value='';
+  if(max) max.value='';
+  document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed','false'));
+  const u = new URL(window.location.href);
+  u.searchParams.set('page','1');
+  history.replaceState({}, '', u.toString());
+}
+
 function getParams(){
   const u = new URL(window.location.href);
   return {
@@ -74,10 +108,25 @@ function updateBreadcrumbs(state){
     parts.push({label:'Catálogo', href:'category.html'});
   }
 
-  bc.innerHTML = parts.map((p,i) => {
-    const isLast = i === parts.length-1;
-    return isLast ? `<span aria-current="page">${p.label}</span>` : `<a href="${p.href}">${p.label}</a> <span aria-hidden="true">/</span> `;
-  }).join('');
+  bc.innerHTML = '';
+  parts.forEach((p, i) => {
+    const isLast = i === parts.length - 1;
+    if(!isLast){
+      const a = document.createElement('a');
+      a.href = safeUrl(p.href) || 'index.html';
+      setText(a, p.label);
+      bc.appendChild(a);
+      const sep = document.createElement('span');
+      sep.setAttribute('aria-hidden','true');
+      sep.textContent = ' / ';
+      bc.appendChild(sep);
+    } else {
+      const span = document.createElement('span');
+      span.setAttribute('aria-current','page');
+      setText(span, p.label);
+      bc.appendChild(span);
+    }
+  });
 
   // JSON-LD (BreadcrumbList + CollectionPage)
   const jsonEl = document.getElementById('jsonld-category');
@@ -223,8 +272,27 @@ function renderPagination(total, page, perPage, baseParams){
 }
 
 async function renderCategory(){
+  const seq = ++_renderSeq;
+  const grid = document.querySelector('[data-grid-category]');
+  const pagination = document.querySelector('[data-pagination]');
+
+  // Loading state (só na primeira carga real do catálogo)
+  if(grid && !_catalogReady){
+    grid.setAttribute('aria-busy','true');
+    renderSkeletonGrid(grid, { count: 12 });
+  }
+  if(pagination) pagination.innerHTML = '';
+  if(!_catalogReady) await _paintNextFrame();
+
+  let catalogError = null;
   if(typeof ensureCatalogLoaded === 'function'){
-    try{ await ensureCatalogLoaded(); } catch(_){ /* fallback */ }
+    try{
+      await ensureCatalogLoaded();
+      _catalogReady = true;
+    } catch(e){
+      // Mantém fallback local (STORE) quando disponível.
+      catalogError = e;
+    }
   }
   const params = getParams();
 
@@ -241,6 +309,22 @@ async function renderCategory(){
   setCanonical(`${STORE.url}/category.html`);
 
   const all = getActiveProducts();
+  // Se há fallback local carregado, considere o catálogo "pronto" para evitar flicker em re-renders.
+  if(!_catalogReady && all && all.length > 0) _catalogReady = true;
+  // Se falhou o catálogo remoto e também não há fallback local, exibe erro.
+  if(catalogError && (!all || all.length === 0)){
+    if(seq !== _renderSeq) return;
+    if(grid){
+      grid.setAttribute('aria-busy','false');
+      renderErrorState(grid, {
+        title: 'Não foi possível carregar o catálogo',
+        message: catalogError?.message ? `Tente novamente. (${catalogError.message})` : 'Tente novamente.',
+        onRetry: () => { _catalogReady = false; renderCategory(); }
+      });
+    }
+    if(pagination) pagination.innerHTML = '';
+    return;
+  }
   const baseList = applyFilters(all, {cat: params.cat, q: params.q, sort:'relevance', color:'', size:'', minPrice:0, maxPrice:999999});
 
   // popular opções com base no universo
@@ -257,12 +341,26 @@ async function renderCategory(){
   const start = (page-1) * perPage;
   const pageItems = filtered.slice(start, start + perPage);
 
-  const grid = document.querySelector('[data-grid-category]');
   if(grid){
+    grid.setAttribute('aria-busy','false');
     grid.innerHTML = '';
     if(pageItems.length === 0){
-      grid.innerHTML = `<div class="notice">Nenhum produto encontrado. Tente ajustar os filtros ou buscar outro termo.</div>`;
+      renderEmptyState(grid, {
+        title: 'Nenhum produto encontrado',
+        message: 'Tente ajustar os filtros ou buscar outro termo.',
+        primaryAction: { label: 'Limpar filtros', onClick: () => { _clearAllFilters(); renderCategory(); } },
+        secondaryAction: { label: 'Ver catálogo', href: 'category.html' }
+      });
     } else {
+      if(catalogError){
+        grid.appendChild(createErrorState({
+          title: 'Dados ao vivo indisponíveis',
+          message: 'Exibindo catálogo offline. Você pode tentar novamente para buscar dados atualizados.',
+          onRetry: () => { _catalogReady = false; renderCategory(); },
+          retryLabel: 'Tentar novamente',
+          secondaryAction: null
+        }));
+      }
       pageItems.forEach(p => grid.appendChild(renderProductCard(p)));
       bindQuickAdd(grid);
     }
@@ -288,11 +386,7 @@ function bindCategoryEvents(){
   const clearBtn = document.querySelector('[data-clear-filters]');
   if(clearBtn){
     clearBtn.addEventListener('click', () => {
-      document.querySelector('[data-filter-color]').value='';
-      document.querySelector('[data-filter-size]').value='';
-      document.querySelector('[data-filter-min]').value='';
-      document.querySelector('[data-filter-max]').value='';
-      document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed','false'));
+      _clearAllFilters();
       renderCategory();
     });
   }
