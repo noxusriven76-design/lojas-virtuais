@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <title>Catálogo | Aurora Clothing</title>
-  <meta name="description" content="Explore o catálogo da Aurora: roupas femininas, masculinas e acessórios com estética minimalista.">
-  <link rel="canonical" href="https://www.sualoja.com/category.html">
+  <title>Termos de Uso | Aurora Clothing</title>
+  <meta name="description" content="Leia os termos e condições para uso do site e compras na Aurora Clothing.">
+  <link rel="canonical" href="https://www.sualoja.com/terms.html">
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,18 +22,16 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://www.sualoja.com/assets/img/og-default.svg">
 
-  <meta property="og:title" content="Catálogo | Aurora Clothing">
-  <meta property="og:description" content="Filtros por tamanho, cor e preço. Ordene e encontre seu próximo look com fotos grandes e foco em produto.">
-  <meta property="og:url" content="https://www.sualoja.com/category.html">
-  <meta name="twitter:title" content="Catálogo | Aurora Clothing">
-  <meta name="twitter:description" content="Roupas minimalistas com filtros e ordenação.">
-
-  <script id="jsonld-category" type="application/ld+json">{}</script>
+  <meta property="og:title" content="Termos de Uso | Aurora Clothing">
+  <meta property="og:description" content="Condições gerais para uso do site e compras.">
+  <meta property="og:url" content="https://www.sualoja.com/terms.html">
+  <meta name="twitter:title" content="Termos de Uso | Aurora Clothing">
+  <meta name="twitter:description" content="Regras, direitos e responsabilidades.">
 </head>
 <body>
 
 <a class="skip-link" href="#conteudo">Pular para conteúdo</a>
-<header class="site-header"> 
+<header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="index.html" aria-label="Ir para a página inicial">
       <img src="assets/img/brand/logo.svg" alt="Aurora Clothing" width="220" height="48">
@@ -84,63 +82,41 @@
   </nav>
 </aside>
 
-
-<div class="container breadcrumbs" data-breadcrumbs aria-label="Breadcrumb"></div>
+<div class="container breadcrumbs" aria-label="Breadcrumb">
+  <a href="index.html">Início</a> <span aria-hidden="true">/</span>
+  <span aria-current="page">Termos de uso</span>
+</div>
 
 <main id="conteudo" class="container">
   <section class="section">
-    <div class="section-head">
-      <h1 data-page-title>Catálogo</h1>
-      <div style="display:flex; gap:10px; align-items:center">
-        <label class="label" for="sort">Ordenar</label>
-        <select id="sort" class="select" data-sort aria-label="Ordenar produtos">
-          <option value="relevance">Relevância</option>
-          <option value="new">Novidade</option>
-          <option value="price-asc">Menor preço</option>
-          <option value="price-desc">Maior preço</option>
-        </select>
-      </div>
-    </div>
+    <div class="form">
+      <h1>Termos de uso</h1>
+      <p>Ao acessar o site da Aurora Clothing, você concorda com os termos abaixo. Caso não concorde, recomendamos não utilizar nossos serviços.</p>
 
-    <div class="two-col">
-      <aside class="filters" aria-label="Filtros">
-        <h2>Filtrar</h2>
+      <h2>Uso do site</h2>
+      <p>Você deve fornecer informações verdadeiras em cadastros e pedidos. É proibido o uso do site para fins ilegais, fraudulentos ou que prejudiquem terceiros.</p>
 
-        <div class="field">
-          <span class="label">Cor</span>
-          <input type="hidden" data-filter-color value="">
-          <div class="chips" data-filter-colors></div>
-        </div>
+      <h2>Compras e pagamentos</h2>
+      <ul>
+        <li>Os preços e condições podem ser atualizados sem aviso prévio.</li>
+        <li>Pedidos são confirmados após aprovação do pagamento.</li>
+        <li>Reservamo-nos o direito de cancelar pedidos com inconsistências.</li>
+      </ul>
 
-        <div class="field">
-          <span class="label">Tamanho</span>
-          <input type="hidden" data-filter-size value="">
-          <div class="chips" data-filter-sizes></div>
-        </div>
+      <h2>Entrega e disponibilidade</h2>
+      <p>Os prazos exibidos são estimativas e podem variar por região ou fatores externos. Informaremos qualquer alteração relevante por e-mail.</p>
 
-        <div class="field">
-          <label class="label" for="min">Preço (mín.)</label>
-          <input id="min" class="input" type="number" min="0" step="1" placeholder="0" data-filter-min>
-        </div>
+      <h2>Propriedade intelectual</h2>
+      <p>Todo o conteúdo do site (textos, imagens e marca) pertence à Aurora Clothing e não pode ser usado sem autorização.</p>
 
-        <div class="field">
-          <label class="label" for="max">Preço (máx.)</label>
-          <input id="max" class="input" type="number" min="0" step="1" placeholder="500" data-filter-max>
-        </div>
+      <h2>Alterações</h2>
+      <p>Podemos atualizar estes termos periodicamente. Recomendamos revisar esta página sempre que necessário.</p>
 
-        <button class="btn btn-ghost" type="button" data-clear-filters>Limpar filtros</button>
-
-        <div class="notice" style="margin-top:14px">Dica: use a busca no topo para encontrar por nome. “Enter” abre resultados.</div>
-      </aside>
-
-      <section aria-label="Lista de produtos">
-        <div class="grid" data-grid-category></div>
-        <nav class="pagination" data-pagination aria-label="Paginação"></nav>
-      </section>
+      <hr class="sep">
+      <p class="help">Última atualização: 15/03/2024 (placeholder).</p>
     </div>
   </section>
 </main>
-
 
 <footer class="site-footer">
   <div class="container footer-inner">
@@ -178,7 +154,6 @@
   document.getElementById('ano').textContent = new Date().getFullYear();
 </script>
 
-
-<script type="module" src="assets/js/entry/categoryEntry.js"></script>
+<script type="module" src="assets/js/main.js"></script>
 </body>
 </html>

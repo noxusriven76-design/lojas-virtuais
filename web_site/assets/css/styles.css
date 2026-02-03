@@ -643,7 +643,7 @@ hr.sep{ border:0; border-top:1px solid var(--line); margin: 16px 0; }
   gap: 14px;
 }
 @media (min-width: 840px){
-  .footer-inner{ grid-template-columns: 1.4fr 1fr 1fr; }
+  .footer-inner{ grid-template-columns: 1.4fr 1fr 1fr 1fr; }
 }
 .footer-inner h2{ font-size: 14px; margin:0 0 10px; }
 .footer-inner a{ color: var(--muted); }

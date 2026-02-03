@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <title>Catálogo | Aurora Clothing</title>
-  <meta name="description" content="Explore o catálogo da Aurora: roupas femininas, masculinas e acessórios com estética minimalista.">
-  <link rel="canonical" href="https://www.sualoja.com/category.html">
+  <title>Trocas e Devoluções | Aurora Clothing</title>
+  <meta name="description" content="Confira prazos, condições e passo a passo para trocas e devoluções na Aurora Clothing.">
+  <link rel="canonical" href="https://www.sualoja.com/returns.html">
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,18 +22,16 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://www.sualoja.com/assets/img/og-default.svg">
 
-  <meta property="og:title" content="Catálogo | Aurora Clothing">
-  <meta property="og:description" content="Filtros por tamanho, cor e preço. Ordene e encontre seu próximo look com fotos grandes e foco em produto.">
-  <meta property="og:url" content="https://www.sualoja.com/category.html">
-  <meta name="twitter:title" content="Catálogo | Aurora Clothing">
-  <meta name="twitter:description" content="Roupas minimalistas com filtros e ordenação.">
-
-  <script id="jsonld-category" type="application/ld+json">{}</script>
+  <meta property="og:title" content="Trocas e Devoluções | Aurora Clothing">
+  <meta property="og:description" content="Entenda como solicitar troca ou devolução de forma simples.">
+  <meta property="og:url" content="https://www.sualoja.com/returns.html">
+  <meta name="twitter:title" content="Trocas e Devoluções | Aurora Clothing">
+  <meta name="twitter:description" content="Condições e prazos para trocas ou devoluções.">
 </head>
 <body>
 
 <a class="skip-link" href="#conteudo">Pular para conteúdo</a>
-<header class="site-header"> 
+<header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="index.html" aria-label="Ir para a página inicial">
       <img src="assets/img/brand/logo.svg" alt="Aurora Clothing" width="220" height="48">
@@ -84,63 +82,45 @@
   </nav>
 </aside>
 
-
-<div class="container breadcrumbs" data-breadcrumbs aria-label="Breadcrumb"></div>
+<div class="container breadcrumbs" aria-label="Breadcrumb">
+  <a href="index.html">Início</a> <span aria-hidden="true">/</span>
+  <span aria-current="page">Trocas e devoluções</span>
+</div>
 
 <main id="conteudo" class="container">
   <section class="section">
-    <div class="section-head">
-      <h1 data-page-title>Catálogo</h1>
-      <div style="display:flex; gap:10px; align-items:center">
-        <label class="label" for="sort">Ordenar</label>
-        <select id="sort" class="select" data-sort aria-label="Ordenar produtos">
-          <option value="relevance">Relevância</option>
-          <option value="new">Novidade</option>
-          <option value="price-asc">Menor preço</option>
-          <option value="price-desc">Maior preço</option>
-        </select>
-      </div>
-    </div>
+    <div class="form">
+      <h1>Trocas e devoluções</h1>
+      <p>Queremos que você ame sua compra. Se precisar trocar ou devolver, siga o passo a passo abaixo.</p>
 
-    <div class="two-col">
-      <aside class="filters" aria-label="Filtros">
-        <h2>Filtrar</h2>
+      <h2>Prazos</h2>
+      <ul>
+        <li><strong>Devolução:</strong> até 7 dias corridos após o recebimento.</li>
+        <li><strong>Troca:</strong> até 30 dias corridos após o recebimento.</li>
+      </ul>
 
-        <div class="field">
-          <span class="label">Cor</span>
-          <input type="hidden" data-filter-color value="">
-          <div class="chips" data-filter-colors></div>
-        </div>
+      <h2>Condições</h2>
+      <ul>
+        <li>Produto sem uso, com etiqueta e embalagem original.</li>
+        <li>Envio da nota/recibo junto ao pacote.</li>
+        <li>Itens promocionais seguem as condições específicas informadas no anúncio.</li>
+      </ul>
 
-        <div class="field">
-          <span class="label">Tamanho</span>
-          <input type="hidden" data-filter-size value="">
-          <div class="chips" data-filter-sizes></div>
-        </div>
+      <h2>Como solicitar</h2>
+      <ol>
+        <li>Acesse o <a href="contact.html">formulário de contato</a> e informe o número do pedido.</li>
+        <li>Escolha entre troca ou reembolso e descreva o motivo.</li>
+        <li>Você receberá instruções de postagem por e-mail.</li>
+      </ol>
 
-        <div class="field">
-          <label class="label" for="min">Preço (mín.)</label>
-          <input id="min" class="input" type="number" min="0" step="1" placeholder="0" data-filter-min>
-        </div>
+      <h2>Reembolso</h2>
+      <p>O reembolso é realizado após análise do produto. O prazo depende do meio de pagamento utilizado.</p>
 
-        <div class="field">
-          <label class="label" for="max">Preço (máx.)</label>
-          <input id="max" class="input" type="number" min="0" step="1" placeholder="500" data-filter-max>
-        </div>
-
-        <button class="btn btn-ghost" type="button" data-clear-filters>Limpar filtros</button>
-
-        <div class="notice" style="margin-top:14px">Dica: use a busca no topo para encontrar por nome. “Enter” abre resultados.</div>
-      </aside>
-
-      <section aria-label="Lista de produtos">
-        <div class="grid" data-grid-category></div>
-        <nav class="pagination" data-pagination aria-label="Paginação"></nav>
-      </section>
+      <hr class="sep">
+      <p class="help">Precisa de ajuda? Fale com nosso <a href="support.html">chat de suporte</a>.</p>
     </div>
   </section>
 </main>
-
 
 <footer class="site-footer">
   <div class="container footer-inner">
@@ -178,7 +158,6 @@
   document.getElementById('ano').textContent = new Date().getFullYear();
 </script>
 
-
-<script type="module" src="assets/js/entry/categoryEntry.js"></script>
+<script type="module" src="assets/js/main.js"></script>
 </body>
 </html>
