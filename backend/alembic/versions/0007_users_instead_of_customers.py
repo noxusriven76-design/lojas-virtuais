@@ -167,19 +167,18 @@ def upgrade() -> None:
     op.drop_column("orders", "customer_id")
 
     # 5) Drop customers table (after all refs removed)
-    op.drop_index("ix_customers_store_user", table_name="customers")
-    op.drop_index("ix_customers_store_email", table_name="customers")
-    op.drop_index("ix_customers_user_id", table_name="customers")
-    op.drop_index("ix_customers_email", table_name="customers")
-    op.drop_index("ix_customers_store_id", table_name="customers")
-    op.drop_index("ix_customers_id", table_name="customers")
+    # On MySQL, FK-backed columns may require supporting indexes and DROP INDEX can fail
+    # with errno 1553. Since we're dropping the whole table, remove FKs first and then
+    # drop the table directly (indexes are dropped automatically with the table).
+    _mysql_drop_fk("customers", "user_id")
+    _mysql_drop_fk("customers", "store_id")
     op.drop_table("customers")
 
     # 6) Enforce NOT NULL on new user_id columns
-    op.alter_column("addresses", "user_id", nullable=False)
-    op.alter_column("favorites", "user_id", nullable=False)
-    op.alter_column("orders", "user_id", nullable=False)
-    op.alter_column("coupon_redemptions", "user_id", nullable=False)
+    op.alter_column("addresses", "user_id", existing_type=sa.Integer(), nullable=False)
+    op.alter_column("favorites", "user_id", existing_type=sa.Integer(), nullable=False)
+    op.alter_column("orders", "user_id", existing_type=sa.Integer(), nullable=False)
+    op.alter_column("coupon_redemptions", "user_id", existing_type=sa.Integer(), nullable=False)
 
 
 def downgrade() -> None:
