@@ -1,0 +1,4 @@
+[submodule "mobile_app/flutter_application_1_loja_virtual"]
+	path = mobile_app/flutter_application_1_loja_virtual
+	url = https://github.com/noxusriven76-design/teste1.git
+	branch = master

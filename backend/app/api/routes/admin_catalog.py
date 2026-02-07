@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from decimal import Decimal
+
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_db
 from app.core.permissions import require_store_manager
 from app.core.uploads import UploadValidationError, delete_upload_by_public_url, get_product_upload_dir, save_upload_file
-from app.models.catalog import Category, Product, ProductVariant
+from app.models.catalog import Category, Product, ProductImage, ProductVariant
 from app.models.order import OrderItem
 from app.schemas.catalog import (
     CategoryCreateIn,
@@ -14,8 +16,12 @@ from app.schemas.catalog import (
     CategoryTreeOut,
     CategoryUpdateIn,
     ProductAdminOut,
+    ProductCreateIn,
     ProductDeleteOut,
     ProductImageOut,
+    ProductImageAdminOut,
+    ProductImageUpdateIn,
+    ProductVariantCreateIn,
     ProductUpdateIn,
 )
 
@@ -59,6 +65,35 @@ def _ensure_store_product(db: Session, store_id: int, product_id: int) -> Produc
     if not product:
         raise HTTPException(status_code=404, detail="product not found")
     return product
+
+
+def _ensure_store_product_image(db: Session, store_id: int, product_id: int, image_id: int) -> ProductImage:
+    image = (
+        db.query(ProductImage)
+        .filter(ProductImage.store_id == store_id, ProductImage.product_id == product_id, ProductImage.id == image_id)
+        .first()
+    )
+    if not image:
+        raise HTTPException(status_code=404, detail="product image not found")
+    return image
+
+
+def _sync_product_cover_from_gallery(db: Session, store_id: int, product: Product) -> None:
+    cover = (
+        db.query(ProductImage)
+        .filter(ProductImage.store_id == store_id, ProductImage.product_id == product.id, ProductImage.is_cover == True)  # noqa: E712
+        .order_by(ProductImage.sort_order.asc(), ProductImage.id.asc())
+        .first()
+    )
+    product.image_url = cover.image_url if cover else None
+    db.add(product)
+
+
+def _set_cover_image(db: Session, store_id: int, product_id: int, image_id: int) -> None:
+    images = db.query(ProductImage).filter(ProductImage.store_id == store_id, ProductImage.product_id == product_id).all()
+    for image in images:
+        image.is_cover = image.id == image_id
+        db.add(image)
 
 
 @router.get("/categories", response_model=list[CategoryTreeOut], response_model_exclude_none=True)
@@ -202,6 +237,15 @@ def list_products(store_id: int, db: Session = Depends(get_db), _=Depends(requir
             "category_id": p.category_id,
             "name": p.name,
             "image_url": p.image_url,
+            "images": [
+                ProductImageAdminOut.model_validate(image).model_dump()
+                for image in (
+                    db.query(ProductImage)
+                    .filter(ProductImage.store_id == store_id, ProductImage.product_id == p.id)
+                    .order_by(ProductImage.sort_order.asc(), ProductImage.id.asc())
+                    .all()
+                )
+            ],
             "base_price": p.base_price,
             "is_active": p.is_active,
         }
@@ -210,20 +254,27 @@ def list_products(store_id: int, db: Session = Depends(get_db), _=Depends(requir
 
 
 @router.post("/products")
-def create_product(store_id: int, payload: dict, db: Session = Depends(get_db), _=Depends(require_store_manager)):
+def create_product(
+    store_id: int,
+    payload: ProductCreateIn,
+    db: Session = Depends(get_db),
+    _=Depends(require_store_manager),
+):
     required = ["category_id", "name", "base_price"]
     for k in required:
-        if payload.get(k) in (None, ""):
+        if getattr(payload, k) in (None, ""):
             raise HTTPException(status_code=400, detail=f"{k} required")
+
+    base_price_value = Decimal(str(payload.base_price))
 
     p = Product(
         store_id=store_id,
-        category_id=int(payload["category_id"]),
-        name=str(payload["name"]).strip(),
-        description=str(payload.get("description", "")),
-        image_url=str(payload.get("image_url", "")),
-        base_price=float(payload["base_price"]),
-        is_active=bool(payload.get("is_active", True)),
+        category_id=int(payload.category_id),
+        name=str(payload.name).strip(),
+        description=str(payload.description or ""),
+        image_url=str(payload.image_url or ""),
+        base_price=base_price_value,
+        is_active=bool(payload.is_active),
     )
     db.add(p)
     db.commit()
@@ -259,9 +310,10 @@ def update_product(
     if "price" in fields_set:
         if payload.price is None:
             raise HTTPException(status_code=400, detail="price cannot be null")
-        if float(payload.price) <= 0:
+        price_value = Decimal(str(payload.price))
+        if price_value <= 0:
             raise HTTPException(status_code=400, detail="price must be greater than 0")
-        product.base_price = float(payload.price)
+        product.base_price = price_value
 
     if "is_active" in fields_set:
         if payload.is_active is None:
@@ -312,28 +364,150 @@ def delete_product(
 
 
 @router.post("/products/{product_id}/variants")
-def add_variant(store_id: int, product_id: int, payload: dict, db: Session = Depends(get_db), _=Depends(require_store_manager)):
+def add_variant(
+    store_id: int,
+    product_id: int,
+    payload: ProductVariantCreateIn,
+    db: Session = Depends(get_db),
+    _=Depends(require_store_manager),
+):
     _ensure_store_product(db, store_id=store_id, product_id=product_id)
 
     required = ["sku", "price", "stock"]
     for k in required:
-        if payload.get(k) in (None, ""):
+        if getattr(payload, k) in (None, ""):
             raise HTTPException(status_code=400, detail=f"{k} required")
+
+    price_value = Decimal(str(payload.price))
 
     v = ProductVariant(
         store_id=store_id,
         product_id=product_id,
-        sku=str(payload["sku"]),
-        color=str(payload.get("color", "")),
-        size=str(payload.get("size", "")),
-        price=float(payload["price"]),
-        stock=int(payload["stock"]),
-        active=bool(payload.get("active", True)),
+        sku=str(payload.sku),
+        color=str(payload.color or ""),
+        size=str(payload.size or ""),
+        price=price_value,
+        stock=int(payload.stock),
+        active=bool(payload.active),
     )
     db.add(v)
     db.commit()
     db.refresh(v)
     return {"id": v.id}
+
+
+@router.get("/products/{product_id}/images", response_model=list[ProductImageAdminOut])
+def list_product_images(
+    store_id: int,
+    product_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_store_manager),
+):
+    _ensure_store_product(db, store_id=store_id, product_id=product_id)
+    rows = (
+        db.query(ProductImage)
+        .filter(ProductImage.store_id == store_id, ProductImage.product_id == product_id)
+        .order_by(ProductImage.sort_order.asc(), ProductImage.id.asc())
+        .all()
+    )
+    return [ProductImageAdminOut.model_validate(row) for row in rows]
+
+
+@router.post("/products/{product_id}/images", response_model=ProductImageAdminOut)
+async def upload_product_gallery_image(
+    store_id: int,
+    product_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    _=Depends(require_store_manager),
+):
+    product = _ensure_store_product(db, store_id=store_id, product_id=product_id)
+    try:
+        saved = await save_upload_file(file, target_dir=get_product_upload_dir(product_id))
+    except UploadValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+    existing_count = (
+        db.query(ProductImage.id)
+        .filter(ProductImage.store_id == store_id, ProductImage.product_id == product_id)
+        .count()
+    )
+    image = ProductImage(
+        store_id=store_id,
+        product_id=product_id,
+        image_url=saved.public_url,
+        sort_order=existing_count,
+        is_cover=existing_count == 0,
+    )
+    db.add(image)
+
+    if image.is_cover:
+        product.image_url = saved.public_url
+        db.add(product)
+
+    db.commit()
+    db.refresh(image)
+    return ProductImageAdminOut.model_validate(image)
+
+
+@router.patch("/products/{product_id}/images/{image_id}", response_model=ProductImageAdminOut)
+def update_product_gallery_image(
+    store_id: int,
+    product_id: int,
+    image_id: int,
+    payload: ProductImageUpdateIn,
+    db: Session = Depends(get_db),
+    _=Depends(require_store_manager),
+):
+    product = _ensure_store_product(db, store_id=store_id, product_id=product_id)
+    image = _ensure_store_product_image(db, store_id=store_id, product_id=product_id, image_id=image_id)
+    fields_set = payload.model_fields_set
+
+    if "sort_order" in fields_set and payload.sort_order is not None:
+        image.sort_order = payload.sort_order
+
+    if "is_cover" in fields_set and payload.is_cover is not None:
+        if payload.is_cover:
+            _set_cover_image(db, store_id=store_id, product_id=product_id, image_id=image_id)
+        else:
+            image.is_cover = False
+            db.add(image)
+
+    db.add(image)
+    _sync_product_cover_from_gallery(db, store_id=store_id, product=product)
+    db.commit()
+    db.refresh(image)
+    return ProductImageAdminOut.model_validate(image)
+
+
+@router.delete("/products/{product_id}/images/{image_id}", response_model=list[ProductImageAdminOut])
+def delete_product_gallery_image(
+    store_id: int,
+    product_id: int,
+    image_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_store_manager),
+):
+    product = _ensure_store_product(db, store_id=store_id, product_id=product_id)
+    image = _ensure_store_product_image(db, store_id=store_id, product_id=product_id, image_id=image_id)
+
+    delete_upload_by_public_url(image.image_url)
+    db.delete(image)
+    db.flush()
+
+    rows = (
+        db.query(ProductImage)
+        .filter(ProductImage.store_id == store_id, ProductImage.product_id == product_id)
+        .order_by(ProductImage.sort_order.asc(), ProductImage.id.asc())
+        .all()
+    )
+    for idx, row in enumerate(rows):
+        row.sort_order = idx
+        db.add(row)
+
+    _sync_product_cover_from_gallery(db, store_id=store_id, product=product)
+    db.commit()
+    return [ProductImageAdminOut.model_validate(row) for row in rows]
 
 
 @router.post("/products/{product_id}/image", response_model=ProductImageOut)
@@ -355,8 +529,30 @@ async def upload_product_image(
     except UploadValidationError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    # Best effort cleanup for previous local file.
-    delete_upload_by_public_url(product.image_url)
+    previous_cover = (
+        db.query(ProductImage)
+        .filter(ProductImage.store_id == store_id, ProductImage.product_id == product_id, ProductImage.is_cover == True)  # noqa: E712
+        .first()
+    )
+    if previous_cover:
+        delete_upload_by_public_url(previous_cover.image_url)
+        previous_cover.image_url = saved.public_url
+        db.add(previous_cover)
+    else:
+        next_order = (
+            db.query(ProductImage.id)
+            .filter(ProductImage.store_id == store_id, ProductImage.product_id == product_id)
+            .count()
+        )
+        cover = ProductImage(
+            store_id=store_id,
+            product_id=product_id,
+            image_url=saved.public_url,
+            sort_order=next_order,
+            is_cover=True,
+        )
+        db.add(cover)
+
     product.image_url = saved.public_url
     db.add(product)
     db.commit()
@@ -372,13 +568,20 @@ def delete_product_image(
     _=Depends(require_store_manager),
 ):
     product = _ensure_store_product(db, store_id=store_id, product_id=product_id)
-    previous_image_url = product.image_url
+    cover = (
+        db.query(ProductImage)
+        .filter(ProductImage.store_id == store_id, ProductImage.product_id == product_id, ProductImage.is_cover == True)  # noqa: E712
+        .first()
+    )
 
-    product.image_url = None
-    db.add(product)
+    if cover:
+        cover.is_cover = False
+        db.add(cover)
+        if delete_file:
+            delete_upload_by_public_url(cover.image_url)
+            db.delete(cover)
+
+    _sync_product_cover_from_gallery(db, store_id=store_id, product=product)
     db.commit()
-
-    if delete_file and previous_image_url:
-        delete_upload_by_public_url(previous_image_url)
-
+    db.refresh(product)
     return ProductImageOut(product_id=product.id, image_url=product.image_url)

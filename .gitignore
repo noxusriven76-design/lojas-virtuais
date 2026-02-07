@@ -1,4 +1,39 @@
-node_modules
+node_modules/
+dist/
+build/
+coverage/
+
+# Env files
 .env
-dist
-build
+.env.*
+!.env.example
+backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Flutter / Dart / Android local artifacts
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub/
+.pub-cache/
+**/android/local.properties
+*.iml
+mobile_app/*.gradle-nb-cache-trust-*
+mobile_app/flutter_application_1_loja_virtual.dart_tool-*
