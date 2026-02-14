@@ -26,3 +26,9 @@ http.interceptors.response.use(
   }
 );
 
+export function getApiErrorMessage(error: unknown, fallback = "Operacao falhou"): string {
+  if (!error || typeof error !== "object") return fallback;
+  const maybeAxios = error as AxiosError<{ detail?: string; error?: { message?: string } }>;
+  const message = maybeAxios.response?.data?.error?.message ?? maybeAxios.response?.data?.detail;
+  return typeof message === "string" && message.trim() ? message : fallback;
+}

@@ -1,4 +1,5 @@
 import type { MyStore } from "./stores.api";
+import { useSyncExternalStore } from "react";
 
 const STORE_ID_KEY = "admin_panel_current_store_id";
 
@@ -8,6 +9,11 @@ let currentStoreId: number | null = (() => {
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : null;
 })();
+const listeners = new Set<() => void>();
+
+function emitChange() {
+  listeners.forEach((listener) => listener());
+}
 
 export const storeStore = {
   getCurrentStoreId(): number | null {
@@ -16,10 +22,12 @@ export const storeStore = {
   setCurrentStoreId(id: number) {
     currentStoreId = id;
     localStorage.setItem(STORE_ID_KEY, String(id));
+    emitChange();
   },
   clearCurrentStoreId() {
     currentStoreId = null;
     localStorage.removeItem(STORE_ID_KEY);
+    emitChange();
   },
   validateCurrentStoreId(availableStores: MyStore[]) {
     const selected = this.getCurrentStoreId();
@@ -29,5 +37,12 @@ export const storeStore = {
       this.clearCurrentStoreId();
     }
   },
+  subscribe(listener: () => void) {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+  },
 };
 
+export function useCurrentStoreId(): number | null {
+  return useSyncExternalStore(storeStore.subscribe, storeStore.getCurrentStoreId, storeStore.getCurrentStoreId);
+}

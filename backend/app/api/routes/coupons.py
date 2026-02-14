@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_db, get_current_user_optional, get_store_from_path
-from app.core.permissions import require_store_manager
+from app.core.permissions import require_coupons_manage
 from app.repositories.utils import resolve_store
 from app.repositories.coupons import (
     create_coupon,
@@ -107,7 +107,7 @@ def admin_create_coupon(
     store_id: int,
     payload: CouponCreateIn,
     db: Session = Depends(get_db),
-    _=Depends(require_store_manager),
+    _=Depends(require_coupons_manage),
 ):
     try:
         c = create_coupon(db, store_id=store_id, payload=payload.model_dump())
@@ -122,7 +122,7 @@ def admin_update_coupon(
     coupon_id: int,
     payload: CouponUpdateIn,
     db: Session = Depends(get_db),
-    _=Depends(require_store_manager),
+    _=Depends(require_coupons_manage),
 ):
     try:
         c = update_coupon(db, store_id=store_id, coupon_id=coupon_id, payload=payload.model_dump(exclude_unset=True))
@@ -136,7 +136,7 @@ def admin_deactivate_coupon(
     store_id: int,
     coupon_id: int,
     db: Session = Depends(get_db),
-    _=Depends(require_store_manager),
+    _=Depends(require_coupons_manage),
 ):
     try:
         c = deactivate_coupon(db, store_id=store_id, coupon_id=coupon_id)

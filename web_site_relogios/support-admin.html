@@ -1,0 +1,130 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <title>Suporte (Admin) | Atelier Horloger</title>
+  <meta name="description" content="Inbox do suporte (admin).">
+  <link rel="canonical" href="https://www.sualoja.com/support-admin.html">
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#111111">
+
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="watch-site">
+
+<a class="skip-link" href="#conteudo">Pular para conteudo</a>
+<div class="utility-bar">
+  <div class="container utility-inner">
+    <p>Frete expresso para todo o Brasil</p>
+    <p>Parcelamento em ate 10x sem juros</p>
+  </div>
+</div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand watch-brand" href="index.html" aria-label="Ir para a pagina inicial">
+      <span class="watch-brand-main">ATELIER HORLOGER</span>
+      <span class="watch-brand-sub">Casa de Relogios</span>
+    </a>
+
+    <button class="icon-btn nav-toggle" type="button" data-drawer-toggle aria-label="Abrir menu" aria-controls="mobile-drawer" aria-expanded="false">
+      <span aria-hidden="true">&#9776;</span>
+    </button>
+
+    <nav class="nav watch-nav" aria-label="Menu principal">
+      <a href="support.html">Suporte (Cliente)</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-btn" type="button" id="btnRefresh" aria-label="Atualizar">
+        <span aria-hidden="true">&#8635;</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-overlay" data-drawer-overlay hidden></div>
+<aside id="mobile-drawer" class="drawer" data-drawer aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="drawer-header">
+    <div class="drawer-title">Menu</div>
+    <button class="icon-btn" type="button" data-drawer-close aria-label="Fechar menu">
+      <span aria-hidden="true">&#10005;</span>
+    </button>
+  </div>
+  <nav class="drawer-nav" aria-label="Links do menu">
+    <a href="index.html">Home</a>
+    <a href="category.html">Colecoes</a>
+    <a href="support.html">Suporte</a>
+    <a href="contact.html">Contato</a>
+    <a href="account.html" aria-label="Minha conta (placeholder)">Minha Conta</a>
+    <a href="cart.html">Carrinho</a>
+  </nav>
+</aside>
+
+<div class="container breadcrumbs" aria-label="Breadcrumb">
+  <a href="index.html">Inicio</a> <span aria-hidden="true">/</span>
+  <span aria-current="page">Suporte (Admin)</span>
+</div>
+
+<main id="conteudo" class="container">
+  <section class="section">
+    <div class="form">
+      <h1>Inbox do suporte (Admin)</h1>
+      <p class="help">Requer token JWT de <strong>superuser</strong>. Lista conversas abertas e permite responder.</p>
+
+      <div class="field">
+        <label class="label" for="token">Token JWT</label>
+        <textarea id="token" class="input" rows="3" placeholder="Cole o token aqui"></textarea>
+        <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap">
+          <button class="btn" type="button" id="btnSaveToken">Salvar token</button>
+          <button class="btn btn-primary" type="button" id="btnLoad">Carregar conversas</button>
+        </div>
+      </div>
+
+      <div class="notice" id="statusBox" style="display:none; margin-top:16px"></div>
+
+      <div class="grid-2" style="margin-top:16px; gap:16px">
+        <div class="card">
+          <div class="card-body">
+            <h2 style="margin:0 0 10px 0; font-size:16px">Conversas</h2>
+            <div id="convList" style="display:flex; flex-direction:column; gap:8px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h2 style="margin:0 0 10px 0; font-size:16px">Mensagens</h2>
+            <div id="chatBox" style="display:flex; flex-direction:column; gap:10px; min-height:240px"></div>
+
+            <div class="field" style="margin-top:14px">
+              <label class="label" for="msg">Responder</label>
+              <textarea id="msg" class="input" rows="3" placeholder="Escreva"></textarea>
+              <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap">
+                <button class="btn btn-primary" type="button" id="btnSend">Enviar</button>
+                <button class="btn" type="button" id="btnClose">Encerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="sep">
+      <p class="help">Dica: para pegar um token dev, use o usuario <code>admin@local</code> / <code>admin123</code> (ENV=dev).</p>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="assets/js/entry/supportAdminEntry.js"></script>
+</body>
+</html>
+
+
+
+
+
+

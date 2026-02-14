@@ -6,10 +6,11 @@ type LoginResponse = {
   token_type: string;
 };
 
-export async function login(email: string, password: string): Promise<LoginResponse> {
+export async function login(email: string, password: string, otpCode?: string): Promise<LoginResponse> {
   const body = new URLSearchParams();
   body.set("username", email);
   body.set("password", password);
+  if (otpCode && otpCode.trim()) body.set("otp_code", otpCode.trim());
 
   const { data } = await http.post<LoginResponse>("/auth/login", body, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -21,4 +22,3 @@ export async function fetchMe(): Promise<AuthUser> {
   const { data } = await http.get<AuthUser>("/auth/me");
   return data;
 }
-

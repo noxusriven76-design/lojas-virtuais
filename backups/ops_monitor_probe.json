@@ -1,0 +1,16 @@
+{
+  "date": "2026-02-13T22:21:09.219433+00:00",
+  "result": "ok",
+  "checks": [
+    {
+      "check": "api_health",
+      "ok": true,
+      "message": "health ok"
+    },
+    {
+      "check": "backup_freshness",
+      "ok": true,
+      "message": "latest_backup=phase8_20260213_191955 age_hours=0.02"
+    }
+  ]
+}

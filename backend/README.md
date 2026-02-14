@@ -191,6 +191,29 @@ Requer que o usuário seja membro da loja:
 - `GET /site/{store_slug}`
 - `GET /site/{store_slug}/p/{product_id}`
 
+## 10) Staging (pre-producao)
+Use um ambiente isolado antes de publicar mudancas em producao.
+
+1. Criar arquivo de ambiente staging:
+```bash
+cp backend/.env.staging.example backend/.env.staging
+```
+
+2. Subir stack staging:
+```bash
+docker compose -f docker-compose.staging.yml --env-file backend/.env.staging up -d --build
+```
+
+3. Aplicar migrations no staging:
+```bash
+docker compose -f docker-compose.staging.yml --env-file backend/.env.staging exec api alembic upgrade head
+```
+
+4. Health check staging:
+```bash
+curl http://localhost:8001/health
+```
+
 
 
 ## Cupons de desconto

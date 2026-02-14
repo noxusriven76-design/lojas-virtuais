@@ -48,6 +48,12 @@ def test_engine():
 
 @pytest.fixture()
 def db_session(test_engine):
+    from app.db.base import Base
+
+    # Hard reset between tests to avoid state leakage across suites.
+    Base.metadata.drop_all(bind=test_engine)
+    Base.metadata.create_all(bind=test_engine)
+
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine, future=True)
     db = TestingSessionLocal()
     try:

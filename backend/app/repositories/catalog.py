@@ -6,7 +6,12 @@ from app.models.catalog import Category, Product
 
 
 def list_categories(db: Session, store_id: int) -> list[Category]:
-    return db.query(Category).filter(Category.store_id == store_id).order_by(Category.name.asc()).all()
+    return (
+        db.query(Category)
+        .filter(Category.store_id == store_id)
+        .order_by(Category.sort_order.asc(), Category.name.asc(), Category.id.asc())
+        .all()
+    )
 
 
 def list_products(

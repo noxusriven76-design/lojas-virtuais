@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <title>{{ product.name }} | {{ store.name }}</title>
+  <meta name="description" content="Detalhes do produto" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="{{ theme_asset_base }}/assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="{{ theme_asset_base }}/assets/css/styles.css" />
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para conteudo</a>
+<header class="site-header"><div class="container header-inner"><a class="brand" href="/site/{{ store.slug }}">{% if store.logo_url %}<img src="{{ store.logo_url }}" alt="{{ store.name }}" width="220" height="48" />{% else %}<img src="{{ theme_asset_base }}/assets/img/brand/logo.svg" alt="{{ store.name }}" width="220" height="48" />{% endif %}</a></div></header>
+<div class="container breadcrumbs" aria-label="Breadcrumb"><a href="/site/{{ store.slug }}">Inicio</a> / <span>{{ product.name }}</span></div>
+<main id="conteudo" class="container">
+  <section class="section">
+    <div class="product">
+      <div class="gallery" aria-label="Galeria do produto"><div class="gallery-main">{% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" />{% else %}<img src="{{ theme_asset_base }}/assets/img/og-default.svg" alt="{{ product.name }}" />{% endif %}</div></div>
+      <article class="product-info" aria-label="Informacoes do produto">
+        <h1>{{ product.name }}</h1>
+        <p><strong>{% if product.category %}{{ product.category.name }}{% endif %}</strong></p>
+        <p>{% if product.description %}{{ product.description }}{% endif %}</p>
+        <hr class="sep" />
+        <div class="price"><div class="now">R$ {{ '%.2f'|format(product.base_price|float) }}</div></div>
+        <p class="footer-small">SKU: {% if product.sku %}{{ product.sku }}{% else %}-{% endif %}</p>
+        <div class="card-actions" style="margin-top:14px"><a class="btn btn-primary" href="/site/{{ store.slug }}">Voltar ao catalogo</a></div>
+      </article>
+    </div>
+  </section>
+</main>
+</body>
+</html>

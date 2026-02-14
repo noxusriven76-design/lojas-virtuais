@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from decimal import Decimal
 
 from pydantic import (
@@ -64,6 +65,10 @@ class ProductCreateIn(BaseModel):
     description: str = ""
     image_url: str = ""
     is_active: bool = True
+    sku: str | None = None
+    color: str = ""
+    size: str = ""
+    stock: int | None = None
 
 
 class ProductUpdateIn(BaseModel):
@@ -76,14 +81,17 @@ class ProductUpdateIn(BaseModel):
     category_id: int | None = Field(default=None, ge=1)
     sku: str | None = None
     image_url: str | None = None
+    color: str | None = None
+    size: str | None = None
+    stock: int | None = None
 
-    @field_validator("name", "title", "sku")
+    @field_validator("name", "title", "sku", "color", "size")
     @classmethod
     def _strip_optional_non_empty(cls, v: str | None) -> str | None:
         if v is None:
             return v
         v = v.strip()
-        if not v:
+        if not v and cls.__name__ != "ProductUpdateIn":
             raise ValueError("value must not be empty")
         return v
 
@@ -170,6 +178,7 @@ class ProductOut(BaseModel):
     name: str
     description: str
     image_url: str | None = None
+    images: list["ProductImageAdminOut"] = []
     base_price: Decimal
     is_active: bool
     variants: list[ProductVariantOut]
@@ -185,9 +194,15 @@ class ProductAdminOut(BaseModel):
     id: int
     category_id: int
     name: str
+    description: str = ""
     image_url: str | None = None
+    images: list["ProductImageAdminOut"] = []
     base_price: Decimal
     is_active: bool
+    sku: str = ""
+    color: str = ""
+    size: str = ""
+    stock: int = 0
 
     @field_serializer("base_price")
     def _ser_base_price(self, v: Decimal):  # keep public API as JSON number
@@ -205,5 +220,60 @@ class ProductImageOut(BaseModel):
     image_url: str | None = None
 
 
+class ProductImageAdminOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    product_id: int
+    image_url: str
+    sort_order: int
+    is_cover: bool
+
+
+class ProductImageUpdateIn(BaseModel):
+    is_cover: bool | None = None
+    sort_order: int | None = None
+
+
 class IdOut(BaseModel):
     id: int
+
+
+class ProductBulkUpdateIn(BaseModel):
+    product_ids: list[int] = Field(default_factory=list)
+    category_id: int | None = None
+    is_active: bool | None = None
+    price: Decimal | float | None = None
+    stock: int | None = None
+
+
+class ProductBulkUpdateOut(BaseModel):
+    ok: bool
+    updated_count: int
+
+
+class CatalogImportOut(BaseModel):
+    ok: bool
+    job_id: int
+    imported: int
+    updated: int
+    errors: list[str] = []
+
+
+class CatalogJobOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    store_id: int
+    user_id: int | None = None
+    job_type: str
+    status: str
+    payload: dict | None = None
+    result: dict | None = None
+    error_message: str | None = None
+    created_at: datetime
+    started_at: datetime | None = None
+    finished_at: datetime | None = None
+
+
+ProductOut.model_rebuild()
+ProductAdminOut.model_rebuild()

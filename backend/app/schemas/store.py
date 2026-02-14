@@ -46,6 +46,36 @@ class StoreCustomerListOut(BaseModel):
     offset: int
 
 
+class GlobalSearchProductOut(BaseModel):
+    id: int
+    name: str
+    sku: str | None = None
+    price: float
+    is_active: bool
+
+
+class GlobalSearchCustomerOut(BaseModel):
+    id: int
+    name: str
+    email: str | None = None
+    total_orders: int
+
+
+class GlobalSearchOrderOut(BaseModel):
+    id: int
+    status: str
+    total: float
+    created_at: datetime
+    customer_name: str | None = None
+
+
+class GlobalSearchOut(BaseModel):
+    query: str
+    products: list[GlobalSearchProductOut]
+    customers: list[GlobalSearchCustomerOut]
+    orders: list[GlobalSearchOrderOut]
+
+
 class MyStoreOut(BaseModel):
     store_id: int
     name: str
@@ -53,8 +83,13 @@ class MyStoreOut(BaseModel):
     logo_url: str | None = None
     is_active: bool
     role: str
+    permissions: list[str] = []
 
 
 class StoreMemberCreateIn(BaseModel):
     user_id: int
-    role: str = "owner"
+    role: str = "admin_loja"
+
+
+class StoreMemberUpdateIn(BaseModel):
+    role: str

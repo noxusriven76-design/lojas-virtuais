@@ -4,8 +4,13 @@ from app.api.routes import auth, public_catalog, shipping, orders, addresses, fa
 from app.api.routes import admin_access
 from app.api.routes import coupons
 from app.api.routes import admin_catalog
+from app.api.routes import admin_audit
+from app.api.routes import admin_dashboard
 from app.api.routes import pages
 from app.api.routes import support_chat
+from app.api.routes import payments_webhook
+from app.api.routes import admin_payments
+from app.api.routes import admin_payment_methods
 
 
 # Primary, versioned API router (what should appear in OpenAPI).
@@ -24,8 +29,13 @@ api_v1_router.include_router(addresses.router, tags=["addresses"])
 api_v1_router.include_router(favorites.router, tags=["favorites"])
 api_v1_router.include_router(admin_access.router, tags=["admin"])
 api_v1_router.include_router(admin_catalog.router, tags=["admin"])
+api_v1_router.include_router(admin_audit.router, tags=["admin"])
+api_v1_router.include_router(admin_dashboard.router, tags=["admin"])
+api_v1_router.include_router(admin_payments.router, tags=["admin"])
+api_v1_router.include_router(admin_payment_methods.router, tags=["admin"])
 api_v1_router.include_router(support_chat.router, tags=["support"])
 api_v1_router.include_router(support_chat.legacy_router, tags=["support"], include_in_schema=False)
+api_v1_router.include_router(payments_webhook.router, tags=["payments"])
 
 
 # Legacy (unversioned) API router for minimal backwards compatibility.
@@ -44,6 +54,10 @@ legacy_router.include_router(addresses.router, tags=["addresses"], include_in_sc
 legacy_router.include_router(favorites.router, tags=["favorites"], include_in_schema=False)
 legacy_router.include_router(admin_access.router, tags=["admin"], include_in_schema=False)
 legacy_router.include_router(admin_catalog.router, tags=["admin"], include_in_schema=False)
+legacy_router.include_router(admin_audit.router, tags=["admin"], include_in_schema=False)
+legacy_router.include_router(admin_dashboard.router, tags=["admin"], include_in_schema=False)
+legacy_router.include_router(admin_payments.router, tags=["admin"], include_in_schema=False)
+legacy_router.include_router(admin_payment_methods.router, tags=["admin"], include_in_schema=False)
 legacy_router.include_router(support_chat.legacy_router, tags=["support"], include_in_schema=False)
 
 

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <title>Catálogo | Aurora Clothing</title>
+  <meta name="description" content="Explore o catálogo da Aurora: roupas femininas, masculinas e acessórios com estética minimalista.">
+  <link rel="canonical" href="https://www.sualoja.com/category.html">
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="/site/{{ store.slug }}/">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#111111">
+
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css?v={{ asset_v }}">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Aurora Clothing">
+  <meta property="og:image" content="https://www.sualoja.com/assets/img/og-default.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.sualoja.com/assets/img/og-default.svg">
+
+  <meta property="og:title" content="Catálogo | Aurora Clothing">
+  <meta property="og:description" content="Filtros por tamanho, cor e preço. Ordene e encontre seu próximo look com fotos grandes e foco em produto.">
+  <meta property="og:url" content="https://www.sualoja.com/category.html">
+  <meta name="twitter:title" content="Catálogo | Aurora Clothing">
+  <meta name="twitter:description" content="Roupas minimalistas com filtros e ordenação.">
+
+  <script id="jsonld-category" type="application/ld+json">{}</script>
+</head>
+<body>
+
+<a class="skip-link" href="#conteudo">Pular para conteúdo</a>
+<header class="site-header"> 
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Ir para a página inicial">
+      <img src="assets/img/brand/logo.svg" alt="Aurora Clothing" width="220" height="48">
+    </a>
+
+    <button class="icon-btn nav-toggle" type="button" data-drawer-toggle aria-label="Abrir menu" aria-controls="mobile-drawer" aria-expanded="false">
+      <span aria-hidden="true">☰</span>
+    </button>
+
+    <nav class="nav" aria-label="Menu principal">
+{% for category in nav_categories %}
+      <a href="category.html?cat={{ category.slug }}">{{ category.name }}</a>
+{% endfor %}
+    </nav>
+
+    <div class="header-actions">
+      <div class="search" role="search">
+        <label class="label" for="busca" style="position:absolute; left:-9999px;">Buscar produtos</label>
+        <input id="busca" class="input" type="search" placeholder="Buscar (ex.: camisa, vestido)" autocomplete="off" data-search-input aria-label="Buscar produtos">
+        <div class="autocomplete" data-autocomplete aria-hidden="true" aria-label="Sugestões de busca"></div>
+      </div>
+
+      <button class="icon-btn" type="button" data-cart-link aria-label="Abrir carrinho">
+        <span aria-hidden="true">🛒</span>
+        <span class="badge" data-cart-badge style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-overlay" data-drawer-overlay hidden></div>
+<aside id="mobile-drawer" class="drawer" data-drawer aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="drawer-header">
+    <div class="drawer-title">Menu</div>
+    <button class="icon-btn" type="button" data-drawer-close aria-label="Fechar menu">
+      <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+  <nav class="drawer-nav" aria-label="Links do menu">
+    <a href="index.html">Home</a>
+    <a href="category.html">Categorias</a>
+    <a href="support.html">Suporte</a>
+    <a href="contact.html">Contato</a>
+    <a href="account.html" aria-label="Minha conta (placeholder)">Minha Conta</a>
+    <a href="cart.html">Carrinho</a>
+  </nav>
+</aside>
+
+
+<div class="container breadcrumbs" data-breadcrumbs aria-label="Breadcrumb"></div>
+
+<main id="conteudo" class="container">
+  <section class="section">
+    <div class="section-head">
+      <h1 data-page-title>Catálogo</h1>
+      <div style="display:flex; gap:10px; align-items:center">
+        <label class="label" for="sort">Ordenar</label>
+        <select id="sort" class="select" data-sort aria-label="Ordenar produtos">
+          <option value="relevance">Relevância</option>
+          <option value="new">Novidade</option>
+          <option value="price-asc">Menor preço</option>
+          <option value="price-desc">Maior preço</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <aside class="filters" aria-label="Filtros">
+        <h2>Filtrar</h2>
+
+        <div class="field">
+          <span class="label">Cor</span>
+          <input type="hidden" data-filter-color value="">
+          <div class="chips" data-filter-colors></div>
+        </div>
+
+        <div class="field">
+          <span class="label">Tamanho</span>
+          <input type="hidden" data-filter-size value="">
+          <div class="chips" data-filter-sizes></div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="min">Preço (mín.)</label>
+          <input id="min" class="input" type="number" min="0" step="1" placeholder="0" data-filter-min>
+        </div>
+
+        <div class="field">
+          <label class="label" for="max">Preço (máx.)</label>
+          <input id="max" class="input" type="number" min="0" step="1" placeholder="500" data-filter-max>
+        </div>
+
+        <button class="btn btn-ghost" type="button" data-clear-filters>Limpar filtros</button>
+
+        <div class="notice" style="margin-top:14px">Dica: use a busca no topo para encontrar por nome. “Enter” abre resultados.</div>
+      </aside>
+
+      <section aria-label="Lista de produtos">
+        <div class="grid" data-grid-category></div>
+        <nav class="pagination" data-pagination aria-label="Paginação"></nav>
+      </section>
+    </div>
+  </section>
+</main>
+
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <h2>Aurora Clothing</h2>
+      <p class="footer-small">Minimalismo, caimento e conforto. Fotos grandes, compra rápida e foco em produto.</p>
+      <p class="footer-small">Atendimento: seg–sex, 9h–18h (placeholder)</p>
+    </div>
+    <div>
+      <h2>Ajuda</h2>
+      <p class="footer-small"><a href="contact.html">Contato</a></p>
+      <p class="footer-small"><a href="support.html">Chat de suporte</a></p>
+      <p class="footer-small"><a href="faq.html">Perguntas frequentes</a></p>
+      <p class="footer-small"><a href="returns.html">Trocas e devoluções</a></p>
+    </div>
+    <div>
+      <h2>Institucional</h2>
+      <p class="footer-small"><a href="about.html">Sobre a Aurora</a></p>
+      <p class="footer-small"><a href="shipping.html">Entrega e frete</a></p>
+      <p class="footer-small"><a href="terms.html">Termos de uso</a></p>
+      <p class="footer-small"><a href="privacy.html">Privacidade</a></p>
+    </div>
+    <div>
+      <h2>Redes</h2>
+      <p class="footer-small"><a href="#" aria-label="Instagram (placeholder)">Instagram</a></p>
+      <p class="footer-small"><a href="#" aria-label="TikTok (placeholder)">TikTok</a></p>
+      <p class="footer-small"><a href="#" aria-label="Pinterest (placeholder)">Pinterest</a></p>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:22px">
+    <div class="footer-small">© <span id="ano"></span> Aurora Clothing. Todos os direitos reservados.</div>
+  </div>
+</footer>
+<script>
+  document.getElementById('ano').textContent = new Date().getFullYear();
+</script>
+
+
+<script type="module" src="assets/js/entry/categoryEntry.js?v={{ asset_v }}"></script>
+</body>
+</html>
+
+
+
+
+

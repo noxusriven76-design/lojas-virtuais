@@ -1,0 +1,7 @@
+date=2026-02-13T19:19:08
+backup_dir=backups/phase8_20260213_191906
+restore_test_db=loja_agro_restore_test
+table_count=
+orders_count=
+products_count=
+result=ok

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <title>Ninho Forte Agro | Gaiolas e racao para passarinhos</title>
+  <meta name="description" content="Loja agro com foco em passarinhos: gaiolas, racao, vitaminas e acessorios. Novas linhas em breve.">
+  <link rel="canonical" href="https://www.sualoja.com/">
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="/site/{{ store.slug }}/">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#234228">
+
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Nunito+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css?v={{ asset_v }}">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Ninho Forte Agro">
+  <meta property="og:image" content="https://www.sualoja.com/assets/img/og-default.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.sualoja.com/assets/img/og-default.svg">
+
+  <meta property="og:title" content="Ninho Forte Agro | Gaiolas e racao para passarinhos">
+  <meta property="og:description" content="Tudo para aves domesticas: gaiolas, racao e acessorios com envio rapido.">
+  <meta property="og:url" content="https://www.sualoja.com/">
+  <meta name="twitter:title" content="Ninho Forte Agro">
+  <meta name="twitter:description" content="Linha especializada para passarinhos e expansao para novos segmentos.">
+
+  <script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "Ninho Forte Agro",
+        "url": "https://www.sualoja.com",
+        "logo": "https://www.sualoja.com/assets/img/brand/logo.svg",
+        "sameAs": ["https://www.instagram.com/", "https://www.youtube.com/"]
+      },
+      {
+        "@type": "WebSite",
+        "name": "Ninho Forte Agro",
+        "url": "https://www.sualoja.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://www.sualoja.com/category.html?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  }</script>
+</head>
+<body class="agro-site">
+
+<a class="skip-link" href="#conteudo">Pular para conteudo</a>
+<div class="agro-topbar">
+  <div class="container agro-topbar-inner">
+    <p>Entrega rapida para todo o Brasil</p>
+    <p>Especialistas em aves domesticas</p>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand agro-brand" href="index.html" aria-label="Ir para a pagina inicial">
+      <span class="agro-brand-main">NINHO FORTE</span>
+      <span class="agro-brand-sub">Agro e Pet Rural</span>
+    </a>
+
+    <button class="icon-btn nav-toggle" type="button" data-drawer-toggle aria-label="Abrir menu" aria-controls="mobile-drawer" aria-expanded="false">
+      <span aria-hidden="true">&#9776;</span>
+    </button>
+
+    <nav class="nav agro-nav" aria-label="Menu principal">
+{% for category in nav_categories %}
+      <a href="category.html?cat={{ category.slug }}">{{ category.name }}</a>
+{% endfor %}
+    </nav>
+
+    <div class="header-actions">
+      <div class="search" role="search">
+        <label class="label" for="busca" style="position:absolute; left:-9999px;">Buscar produtos agro agro</label>
+        <input id="busca" class="input" type="search" placeholder="Buscar gaiola, racao, bebedouro..." autocomplete="off" data-search-input aria-label="Buscar produtos agro agro">
+        <div class="autocomplete" data-autocomplete aria-hidden="true" aria-label="Sugestoes de busca"></div>
+      </div>
+
+      <button class="icon-btn" type="button" data-cart-link aria-label="Abrir carrinho">
+        <span aria-hidden="true">&#128722;</span>
+        <span class="badge" data-cart-badge style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-overlay" data-drawer-overlay hidden></div>
+<aside id="mobile-drawer" class="drawer" data-drawer aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="drawer-header">
+    <div class="drawer-title">Menu</div>
+    <button class="icon-btn" type="button" data-drawer-close aria-label="Fechar menu">
+      <span aria-hidden="true">&#10005;</span>
+    </button>
+  </div>
+  <nav class="drawer-nav" aria-label="Links do menu">
+    <a href="index.html">Home</a>
+    <a href="category.html">Colecoes</a>
+    <a href="support.html">Suporte</a>
+    <a href="contact.html">Contato</a>
+    <a href="account.html" aria-label="Minha conta (placeholder)">Minha Conta</a>
+    <a href="cart.html">Carrinho</a>
+  </nav>
+</aside>
+
+<main id="conteudo">
+  <section class="agro-hero" aria-label="Destaques para aves">
+    <div class="container agro-hero-shell">
+      <article class="agro-hero-main">
+        <p class="agro-kicker">Linha principal</p>
+        <h1>Gaiolas e racao para passarinhos com pronta entrega</h1>
+        <p>Monte um ambiente seguro e saudavel para suas aves com produtos selecionados para rotina, higiene e alimentacao.</p>
+        <div class="agro-hero-cta">
+          <a class="btn btn-primary" href="category.html?cat=gaiolas">Ver gaiolas</a>
+          <a class="btn btn-ghost" href="category.html?cat=racao">Ver racoes</a>
+        </div>
+      </article>
+      <article class="agro-hero-side">
+        <h2>Expansao futura</h2>
+        <p>Esta loja ja esta pronta para abrir novas linhas alem de aves, como pet rural e pequenos animais.</p>
+        <a href="category.html">Explorar catalogo completo</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="agro-points">
+    <div class="container agro-points-grid" aria-label="Diferenciais">
+      <div class="agro-point"><strong>Qualidade</strong><span>produtos testados para aves domesticas</span></div>
+      <div class="agro-point"><strong>Estoque</strong><span>itens essenciais com reposicao continua</span></div>
+      <div class="agro-point"><strong>Suporte</strong><span>atendimento para escolher o item certo</span></div>
+    </div>
+  </section>
+
+  <section class="section agro-section" aria-label="Novidades">
+    <div class="container">
+      <div class="section-head agro-head">
+        <h2>Novidades para passarinhos</h2>
+        <a href="category.html?cat=novidades">Ver tudo</a>
+      </div>
+      <div class="grid" data-grid-novidades></div>
+    </div>
+  </section>
+
+  <section class="agro-banner">
+    <div class="container agro-banner-inner">
+      <p class="agro-kicker">Planejamento comercial</p>
+      <h2>Estrutura pronta para vender outra linha futuramente</h2>
+      <p>Voce pode manter aves como principal agora e abrir uma nova categoria depois sem mudar a base do site.</p>
+      <a class="btn btn-ghost" href="about.html">Entender a loja</a>
+    </div>
+  </section>
+
+  <section class="section agro-section" aria-label="Mais vendidos">
+    <div class="container">
+      <div class="section-head agro-head">
+        <h2>Mais vendidos</h2>
+        <a href="category.html">Ver catalogo</a>
+      </div>
+      <div class="grid" data-grid-mais></div>
+    </div>
+  </section>
+
+  <section class="section agro-section" aria-label="Promocoes">
+    <div class="container">
+      <div class="section-head agro-head">
+        <h2>Promocoes da semana</h2>
+        <a href="category.html?cat=promocoes">Ver ofertas</a>
+      </div>
+      <div class="grid" data-grid-promo></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer agro-footer">
+  <div class="container footer-inner">
+    <div>
+      <h2>Ninho Forte Agro</h2>
+      <p class="footer-small">Linha especializada em passarinhos, com abertura para novas categorias no futuro.</p>
+      <p class="footer-small">Atendimento: seg a sex, 8h as 18h (placeholder)</p>
+    </div>
+    <div>
+      <h2>Ajuda</h2>
+      <p class="footer-small"><a href="contact.html">Contato</a></p>
+      <p class="footer-small"><a href="support.html">Atendimento especializado</a></p>
+      <p class="footer-small"><a href="faq.html">Perguntas frequentes</a></p>
+      <p class="footer-small"><a href="returns.html">Troca e devolucao</a></p>
+    </div>
+    <div>
+      <h2>Institucional</h2>
+      <p class="footer-small"><a href="about.html">Sobre a loja</a></p>
+      <p class="footer-small"><a href="shipping.html">Entrega e frete</a></p>
+      <p class="footer-small"><a href="terms.html">Termos de uso</a></p>
+      <p class="footer-small"><a href="privacy.html">Privacidade</a></p>
+    </div>
+    <div>
+      <h2>Redes</h2>
+      <p class="footer-small"><a href="#" aria-label="Instagram (placeholder)">Instagram</a></p>
+      <p class="footer-small"><a href="#" aria-label="YouTube (placeholder)">YouTube</a></p>
+      <p class="footer-small"><a href="#" aria-label="Pinterest (placeholder)">Pinterest</a></p>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:22px">
+    <div class="footer-small">(c) <span id="ano"></span> Ninho Forte Agro. Todos os direitos reservados.</div>
+  </div>
+</footer>
+<script>
+  document.getElementById('ano').textContent = new Date().getFullYear();
+</script>
+
+<script type="module" src="assets/js/entry/homeEntry.js?v={{ asset_v }}"></script>
+</body>
+</html>
+
+
+
+
+

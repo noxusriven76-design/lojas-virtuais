@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <title>{{ product.name }} | {{ store.name }}</title>
+  <meta name="description" content="Detalhes do relogio" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="{{ theme_asset_base }}/assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="{{ theme_asset_base }}/assets/css/styles.css" />
+</head>
+<body class="watch-site">
+<a class="skip-link" href="#conteudo">Pular para conteudo</a>
+<div class="utility-bar"><div class="container utility-inner"><p>Frete expresso para todo o Brasil</p><p>Parcelamento em ate 10x sem juros</p></div></div>
+<header class="site-header"><div class="container header-inner"><a class="brand watch-brand" href="/site/{{ store.slug }}">{% if store.logo_url %}<img src="{{ store.logo_url }}" alt="{{ store.name }}" width="220" height="48" />{% else %}<img src="{{ theme_asset_base }}/assets/img/brand/logo.svg" alt="{{ store.name }}" width="220" height="48" />{% endif %}</a></div></header>
+<div class="container breadcrumbs watch-breadcrumbs" aria-label="Breadcrumb"><a href="/site/{{ store.slug }}">Inicio</a> / <span>{{ product.name }}</span></div>
+<main id="conteudo" class="container">
+  <section class="section watch-product-section">
+    <div class="product watch-product-layout">
+      <div class="gallery watch-gallery" aria-label="Galeria do produto"><div class="gallery-main">{% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" />{% else %}<img src="{{ theme_asset_base }}/assets/img/og-default.svg" alt="{{ product.name }}" />{% endif %}</div></div>
+      <article class="product-info watch-product-info" aria-label="Informacoes do produto">
+        <h1>{{ product.name }}</h1>
+        <p class="watch-product-cat"><strong>{% if product.category %}{{ product.category.name }}{% endif %}</strong></p>
+        <p>{% if product.description %}{{ product.description }}{% endif %}</p>
+        <hr class="sep" />
+        <div class="price"><div class="now">R$ {{ '%.2f'|format(product.base_price|float) }}</div></div>
+        <p class="footer-small">SKU: {% if product.sku %}{{ product.sku }}{% else %}-{% endif %}</p>
+        <div class="card-actions watch-product-actions"><a class="btn btn-primary" href="/site/{{ store.slug }}">Voltar para colecao</a></div>
+      </article>
+    </div>
+  </section>
+</main>
+</body>
+</html>

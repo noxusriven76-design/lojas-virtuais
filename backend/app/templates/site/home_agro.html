@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <title>{{ store.name }} | Gaiolas e racao para passarinhos</title>
+  <meta name="description" content="Loja agro com foco em passarinhos" />
+  <link rel="canonical" href="/site/{{ store.slug }}" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#234228" />
+  <link rel="icon" href="{{ theme_asset_base }}/assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="{{ theme_asset_base }}/assets/css/styles.css" />
+</head>
+<body class="agro-site">
+<a class="skip-link" href="#conteudo">Pular para conteudo</a>
+<div class="agro-topbar">
+  <div class="container agro-topbar-inner">
+    <p>Entrega rapida para todo o Brasil</p>
+    <p>Especialistas em aves domesticas</p>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand agro-brand" href="/site/{{ store.slug }}" aria-label="Ir para a pagina inicial">
+      {% if store.logo_url %}
+      <img src="{{ store.logo_url }}" alt="{{ store.name }}" width="220" height="48" />
+      {% else %}
+      <img src="{{ theme_asset_base }}/assets/img/brand/logo.svg" alt="{{ store.name }}" width="220" height="48" />
+      {% endif %}
+    </a>
+
+    <nav class="nav agro-nav" aria-label="Menu principal">
+      {% for c in categories[:5] %}
+      <a href="#cat-{{ c.id }}">{{ c.name }}</a>
+      {% endfor %}
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost btn-sm" href="#produtos">Catalogo</a>
+    </div>
+  </div>
+</header>
+
+<main id="conteudo">
+  <section class="agro-hero" aria-label="Destaques para aves">
+    <div class="container agro-hero-shell">
+      <article class="agro-hero-main">
+        <p class="agro-kicker">Linha principal</p>
+        <h1>{{ store.name }}</h1>
+        <p>Gaiolas, racao, vitaminas e acessorios com dados dinamicos da loja.</p>
+        <div class="agro-hero-cta">
+          <a class="btn btn-primary" href="#produtos">Ver produtos</a>
+          <a class="btn btn-ghost" href="#categorias">Ver categorias</a>
+        </div>
+      </article>
+      <article class="agro-hero-side">
+        <h2>Expansao futura</h2>
+        <p>Base pronta para abrir novas linhas sem mudar a estrutura do site.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="agro-points">
+    <div class="container agro-points-grid" aria-label="Diferenciais">
+      <div class="agro-point"><strong>Qualidade</strong><span>produtos testados para aves domesticas</span></div>
+      <div class="agro-point"><strong>Estoque</strong><span>itens essenciais com reposicao continua</span></div>
+      <div class="agro-point"><strong>Suporte</strong><span>atendimento para escolher o item certo</span></div>
+    </div>
+  </section>
+
+  <section id="categorias" class="section agro-section" aria-label="Categorias">
+    <div class="container">
+      <div class="section-head agro-head">
+        <h2>Categorias</h2>
+      </div>
+      <div class="chips">
+        {% for c in categories %}
+        <a id="cat-{{ c.id }}" class="chip" href="#produtos">{{ c.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="section agro-section" aria-label="Novidades">
+    <div class="container">
+      <div class="section-head agro-head">
+        <h2>Novidades para passarinhos</h2>
+      </div>
+      <div class="grid">
+        {% for p in products[:8] %}
+        <article class="card">
+          <a class="card-media" href="/site/{{ store.slug }}/p/{{ p.id }}">
+            {% if p.image_url %}<img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />{% else %}<img src="{{ theme_asset_base }}/assets/img/og-default.svg" alt="{{ p.name }}" loading="lazy" />{% endif %}
+          </a>
+          <div class="card-body">
+            <h3 class="card-title">{{ p.name }}</h3>
+            <div class="price"><span class="now">R$ {{ '%.2f'|format(p.base_price|float) }}</span></div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="agro-banner">
+    <div class="container agro-banner-inner">
+      <p class="agro-kicker">Planejamento comercial</p>
+      <h2>Estrutura pronta para vender outras linhas futuramente</h2>
+      <p>Categorias e produtos conectados ao painel admin por loja.</p>
+    </div>
+  </section>
+
+  <section id="produtos" class="section agro-section" aria-label="Mais vendidos">
+    <div class="container">
+      <div class="section-head agro-head">
+        <h2>Catalogo da loja</h2>
+      </div>
+      <div class="grid">
+        {% for p in products %}
+        <article class="card">
+          <a class="card-media" href="/site/{{ store.slug }}/p/{{ p.id }}">
+            {% if p.image_url %}<img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />{% else %}<img src="{{ theme_asset_base }}/assets/img/og-default.svg" alt="{{ p.name }}" loading="lazy" />{% endif %}
+          </a>
+          <div class="card-body">
+            <h3 class="card-title">{{ p.name }}</h3>
+            <div class="price"><span class="now">R$ {{ '%.2f'|format(p.base_price|float) }}</span></div>
+            <div class="card-actions"><a class="btn btn-primary btn-sm" href="/site/{{ store.slug }}/p/{{ p.id }}">Ver produto</a></div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer agro-footer">
+  <div class="container footer-inner">
+    <div>
+      <h2>{{ store.name }}</h2>
+      <p class="footer-small">Linha especializada para passarinhos.</p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

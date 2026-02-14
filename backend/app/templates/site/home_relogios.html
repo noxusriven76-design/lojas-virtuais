@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <title>{{ store.name }} | Relogios com assinatura classica</title>
+  <meta name="description" content="Colecoes premium com dados dinamicos da loja" />
+  <link rel="canonical" href="/site/{{ store.slug }}" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0d0d0d" />
+  <link rel="icon" href="{{ theme_asset_base }}/assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="{{ theme_asset_base }}/assets/css/styles.css" />
+</head>
+<body class="watch-site">
+<a class="skip-link" href="#conteudo">Pular para conteudo</a>
+<div class="utility-bar">
+  <div class="container utility-inner">
+    <p>Frete expresso para todo o Brasil</p>
+    <p>Parcelamento em ate 10x sem juros</p>
+  </div>
+</div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand watch-brand" href="/site/{{ store.slug }}" aria-label="Ir para a pagina inicial">
+      {% if store.logo_url %}
+      <img src="{{ store.logo_url }}" alt="{{ store.name }}" width="220" height="48" />
+      {% else %}
+      <img src="{{ theme_asset_base }}/assets/img/brand/logo.svg" alt="{{ store.name }}" width="220" height="48" />
+      {% endif %}
+    </a>
+
+    <nav class="nav watch-nav" aria-label="Menu principal">
+      {% for c in categories[:5] %}
+      <a href="#cat-{{ c.id }}">{{ c.name }}</a>
+      {% endfor %}
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost btn-sm" href="#produtos">Colecao</a>
+    </div>
+  </div>
+</header>
+
+<main id="conteudo">
+  <section class="watch-hero">
+    <div class="container watch-hero-shell">
+      <article class="watch-hero-main">
+        <p class="watch-kicker">Nova temporada</p>
+        <h1>{{ store.name }}</h1>
+        <p>Colecoes premium, design atemporal e experiencia refinada.</p>
+      </article>
+      <article class="watch-hero-side">
+        <h2>Curadoria da semana</h2>
+        <p>{{ products|length }} produtos ativos na vitrine.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="watch-assurance">
+    <div class="container watch-assurance-grid" aria-label="Diferenciais da loja">
+      <div class="watch-assurance-item"><strong>2 anos</strong><span>garantia internacional</span></div>
+      <div class="watch-assurance-item"><strong>12x</strong><span>parcelamento no cartao</span></div>
+      <div class="watch-assurance-item"><strong>72h</strong><span>entrega capitais selecionadas</span></div>
+    </div>
+  </section>
+
+  <section id="categorias" class="section watch-section" aria-label="Categorias">
+    <div class="container">
+      <div class="section-head watch-head"><h2>Categorias</h2></div>
+      <div class="chips">
+        {% for c in categories %}
+        <a id="cat-{{ c.id }}" class="chip" href="#produtos">{{ c.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="section watch-section" aria-label="Lancamentos">
+    <div class="container">
+      <div class="section-head watch-head"><h2>Lancamentos</h2></div>
+      <div class="grid">
+        {% for p in products[:8] %}
+        <article class="card">
+          <a class="card-media" href="/site/{{ store.slug }}/p/{{ p.id }}">{% if p.image_url %}<img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />{% else %}<img src="{{ theme_asset_base }}/assets/img/og-default.svg" alt="{{ p.name }}" loading="lazy" />{% endif %}</a>
+          <div class="card-body"><h3 class="card-title">{{ p.name }}</h3><div class="price"><span class="now">R$ {{ '%.2f'|format(p.base_price|float) }}</span></div></div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="watch-editorial">
+    <div class="container watch-editorial-inner">
+      <p class="watch-kicker">Editorial</p>
+      <h2>Relogios que atravessam geracoes</h2>
+      <p>Silhuetas classicas e materiais nobres para momentos importantes.</p>
+    </div>
+  </section>
+
+  <section id="produtos" class="section watch-section" aria-label="Catalogo">
+    <div class="container">
+      <div class="section-head watch-head"><h2>Colecao completa</h2></div>
+      <div class="grid">
+        {% for p in products %}
+        <article class="card">
+          <a class="card-media" href="/site/{{ store.slug }}/p/{{ p.id }}">{% if p.image_url %}<img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />{% else %}<img src="{{ theme_asset_base }}/assets/img/og-default.svg" alt="{{ p.name }}" loading="lazy" />{% endif %}</a>
+          <div class="card-body">
+            <h3 class="card-title">{{ p.name }}</h3>
+            <div class="price"><span class="now">R$ {{ '%.2f'|format(p.base_price|float) }}</span></div>
+            <div class="card-actions"><a class="btn btn-primary btn-sm" href="/site/{{ store.slug }}/p/{{ p.id }}">Ver produto</a></div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer watch-footer">
+  <div class="container footer-inner"><div><h2>{{ store.name }}</h2><p class="footer-small">Relojoaria contemporanea com base classica.</p></div></div>
+</footer>
+</body>
+</html>

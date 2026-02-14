@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <title>Produto | Aurora Clothing</title>
+  <meta name="description" content="Detalhes do produto, variações de tamanho e cor, tabela de medidas e compra rápida.">
+  <link rel="canonical" href="https://www.sualoja.com/product.html">
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="/site/{{ store.slug }}/">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#111111">
+
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css?v={{ asset_v }}">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Aurora Clothing">
+  <meta property="og:image" content="https://www.sualoja.com/assets/img/og-default.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.sualoja.com/assets/img/og-default.svg">
+
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="Produto | Aurora Clothing">
+  <meta property="og:description" content="Veja detalhes do produto, fotos e variações.">
+  <meta property="og:url" content="https://www.sualoja.com/product.html">
+  <meta name="twitter:title" content="Produto | Aurora Clothing">
+  <meta name="twitter:description" content="Compra rápida com foco em produto.">
+
+  <script id="jsonld-product" type="application/ld+json">{}</script>
+</head>
+<body>
+
+<a class="skip-link" href="#conteudo">Pular para conteúdo</a>
+<header class="site-header"> 
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Ir para a página inicial">
+      <img src="assets/img/brand/logo.svg" alt="Aurora Clothing" width="220" height="48">
+    </a>
+
+    <button class="icon-btn nav-toggle" type="button" data-drawer-toggle aria-label="Abrir menu" aria-controls="mobile-drawer" aria-expanded="false">
+      <span aria-hidden="true">☰</span>
+    </button>
+
+    <nav class="nav" aria-label="Menu principal">
+{% for category in nav_categories %}
+      <a href="category.html?cat={{ category.slug }}">{{ category.name }}</a>
+{% endfor %}
+    </nav>
+
+    <div class="header-actions">
+      <div class="search" role="search">
+        <label class="label" for="busca" style="position:absolute; left:-9999px;">Buscar produtos</label>
+        <input id="busca" class="input" type="search" placeholder="Buscar (ex.: camisa, vestido)" autocomplete="off" data-search-input aria-label="Buscar produtos">
+        <div class="autocomplete" data-autocomplete aria-hidden="true" aria-label="Sugestões de busca"></div>
+      </div>
+
+      <button class="icon-btn" type="button" data-cart-link aria-label="Abrir carrinho">
+        <span aria-hidden="true">🛒</span>
+        <span class="badge" data-cart-badge style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-overlay" data-drawer-overlay hidden></div>
+<aside id="mobile-drawer" class="drawer" data-drawer aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="drawer-header">
+    <div class="drawer-title">Menu</div>
+    <button class="icon-btn" type="button" data-drawer-close aria-label="Fechar menu">
+      <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+  <nav class="drawer-nav" aria-label="Links do menu">
+    <a href="index.html">Home</a>
+    <a href="category.html">Categorias</a>
+    <a href="support.html">Suporte</a>
+    <a href="contact.html">Contato</a>
+    <a href="account.html" aria-label="Minha conta (placeholder)">Minha Conta</a>
+    <a href="cart.html">Carrinho</a>
+  </nav>
+</aside>
+
+
+<div class="container breadcrumbs" data-breadcrumbs aria-label="Breadcrumb"></div>
+
+<main id="conteudo" class="container">
+  <section class="section">
+    <div class="product">
+      <div class="gallery" aria-label="Galeria do produto">
+        <div class="gallery-main" data-gallery-main></div>
+        <div class="thumbs" data-thumbs aria-label="Miniaturas"></div>
+      </div>
+
+      <article class="product-info" aria-label="Informações do produto">
+        <h1 data-name>Produto</h1>
+        <p><strong data-cat></strong></p>
+        <p data-desc></p>
+
+        <hr class="sep">
+
+        <div class="price" aria-label="Preço">
+          <div class="now" data-price-now>R$ 0,00</div>
+          <div class="was" data-price-was style="display:none">R$ 0,00</div>
+        </div>
+        <p class="footer-small">SKU: <span data-sku>-</span> • <span data-stock>—</span></p>
+
+        <div class="info-row" aria-label="Variações">
+          <div class="panel">
+            <h3>Cor</h3>
+            <div class="variant-row" data-colors></div>
+          </div>
+          <div class="panel">
+            <h3>Tamanho</h3>
+            <div class="variant-row" data-sizes></div>
+            <div style="margin-top:10px">
+              <button class="btn btn-sm" type="button" data-open-measures>Tabela de medidas</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-actions" style="margin-top:14px">
+          <button class="btn btn-primary" type="button" data-add-to-cart>Adicionar ao carrinho</button>
+          <button class="btn" type="button" data-buy-now>Comprar agora</button>
+        </div>
+
+        <hr class="sep">
+
+        <div class="panel" aria-label="Simulador de frete">
+          <h3>Calcular frete</h3>
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <input class="input" type="text" inputmode="numeric" placeholder="Digite o CEP (ex.: 80000-000)" data-cep aria-label="CEP">
+            <button class="btn btn-primary" type="button" data-calc-shipping>Calcular</button>
+          </div>
+          <p class="help" data-shipping-result>Regra simples: CEP iniciando com “8” tem valor X; outros, valor Y.</p>
+        </div>
+
+        <div class="notice" style="margin-top:12px">Troca fácil • Envio em 24h • Parcele em até 6x (placeholders)</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-label="Produtos relacionados">
+    <div class="section-head">
+      <h2>Você também pode gostar</h2>
+      <a href="category.html">Ver catálogo</a>
+    </div>
+    <div class="grid" data-related></div>
+  </section>
+</main>
+
+<!-- Modal: tabela de medidas -->
+<div class="modal" data-modal aria-hidden="true" role="dialog" aria-modal="true" aria-label="Tabela de medidas">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>Tabela de medidas (placeholder)</h2>
+      <button class="icon-btn modal-close" type="button" data-close-modal aria-label="Fechar">✕</button>
+    </div>
+    <table class="table" aria-label="Tabela de medidas">
+      <thead>
+        <tr>
+          <th>Tamanho</th>
+          <th>Busto/Peito</th>
+          <th>Cintura</th>
+          <th>Quadril</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>P</td><td>88–92</td><td>68–72</td><td>94–98</td></tr>
+        <tr><td>M</td><td>93–97</td><td>73–77</td><td>99–103</td></tr>
+        <tr><td>G</td><td>98–102</td><td>78–82</td><td>104–108</td></tr>
+        <tr><td>GG</td><td>103–107</td><td>83–87</td><td>109–113</td></tr>
+      </tbody>
+    </table>
+    <p class="help">Medidas em cm. Use como referência; caimento pode variar por tecido/modelagem.</p>
+  </div>
+</div>
+
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <h2>Aurora Clothing</h2>
+      <p class="footer-small">Minimalismo, caimento e conforto. Fotos grandes, compra rápida e foco em produto.</p>
+      <p class="footer-small">Atendimento: seg–sex, 9h–18h (placeholder)</p>
+    </div>
+    <div>
+      <h2>Ajuda</h2>
+      <p class="footer-small"><a href="contact.html">Contato</a></p>
+      <p class="footer-small"><a href="support.html">Chat de suporte</a></p>
+      <p class="footer-small"><a href="faq.html">Perguntas frequentes</a></p>
+      <p class="footer-small"><a href="returns.html">Trocas e devoluções</a></p>
+    </div>
+    <div>
+      <h2>Institucional</h2>
+      <p class="footer-small"><a href="about.html">Sobre a Aurora</a></p>
+      <p class="footer-small"><a href="shipping.html">Entrega e frete</a></p>
+      <p class="footer-small"><a href="terms.html">Termos de uso</a></p>
+      <p class="footer-small"><a href="privacy.html">Privacidade</a></p>
+    </div>
+    <div>
+      <h2>Redes</h2>
+      <p class="footer-small"><a href="#" aria-label="Instagram (placeholder)">Instagram</a></p>
+      <p class="footer-small"><a href="#" aria-label="TikTok (placeholder)">TikTok</a></p>
+      <p class="footer-small"><a href="#" aria-label="Pinterest (placeholder)">Pinterest</a></p>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:22px">
+    <div class="footer-small">© <span id="ano"></span> Aurora Clothing. Todos os direitos reservados.</div>
+  </div>
+</footer>
+<script>
+  document.getElementById('ano').textContent = new Date().getFullYear();
+</script>
+
+
+<script type="module" src="assets/js/entry/productEntry.js?v={{ asset_v }}"></script>
+</body>
+</html>
+
+
+
+

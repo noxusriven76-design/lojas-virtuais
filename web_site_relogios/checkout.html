@@ -1,0 +1,263 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <title>Checkout | Atelier Horloger</title>
+  <meta name="description" content="Finalize a compra com checkout elegante: dados, endereco, frete e pagamento.">
+  <link rel="canonical" href="https://www.sualoja.com/checkout.html">
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#111111">
+
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Atelier Horloger">
+  <meta property="og:image" content="https://www.sualoja.com/assets/img/og-default.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.sualoja.com/assets/img/og-default.svg">
+
+  <meta property="og:title" content="Checkout | Atelier Horloger">
+  <meta property="og:description" content="Finalize sua compra com seguranca e estilo premium.">
+  <meta property="og:url" content="https://www.sualoja.com/checkout.html">
+  <meta name="twitter:title" content="Checkout | Atelier Horloger">
+  <meta name="twitter:description" content="Checkout otimizado para uma experiencia fluida.">
+</head>
+<body class="watch-site">
+
+<a class="skip-link" href="#conteudo">Pular para conteudo</a>
+<div class="utility-bar">
+  <div class="container utility-inner">
+    <p>Frete expresso para todo o Brasil</p>
+    <p>Parcelamento em ate 10x sem juros</p>
+  </div>
+</div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand watch-brand" href="index.html" aria-label="Ir para a pagina inicial">
+      <span class="watch-brand-main">ATELIER HORLOGER</span>
+      <span class="watch-brand-sub">Casa de Relogios</span>
+    </a>
+
+    <button class="icon-btn nav-toggle" type="button" data-drawer-toggle aria-label="Abrir menu" aria-controls="mobile-drawer" aria-expanded="false"><span aria-hidden="true">&#9776;</span>
+    </button>
+
+    <nav class="nav watch-nav" aria-label="Menu principal">
+      <a href="category.html?cat=lancamentos">Lancamentos</a>
+      <a href="category.html?cat=classicos">Classicos</a>
+      <a href="category.html?cat=esportivos">Esportivos</a>
+      <a href="category.html?cat=edicao-limitada">Edicao limitada</a>
+      <a href="category.html?cat=promocoes">Ofertas</a>
+    </nav>
+
+    <div class="header-actions">
+      <div class="search" role="search">
+        <label class="label" for="busca" style="position:absolute; left:-9999px;">Buscar relogios</label>
+        <input id="busca" class="input" type="search" placeholder="Buscar por colecao, modelo ou referencia" autocomplete="off" data-search-input aria-label="Buscar relogios">
+        <div class="autocomplete" data-autocomplete aria-hidden="true" aria-label="Sugestoes de busca"></div>
+      </div>
+
+      <button class="icon-btn" type="button" data-cart-link aria-label="Abrir carrinho">
+        <span aria-hidden="true">&#128722;</span>
+        <span class="badge" data-cart-badge style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-overlay" data-drawer-overlay hidden></div>
+<aside id="mobile-drawer" class="drawer" data-drawer aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="drawer-header">
+    <div class="drawer-title">Menu</div>
+    <button class="icon-btn" type="button" data-drawer-close aria-label="Fechar menu">
+      <span aria-hidden="true">&#10005;</span>
+    </button>
+  </div>
+  <nav class="drawer-nav" aria-label="Links do menu">
+    <a href="index.html">Home</a>
+    <a href="category.html">Colecoes</a>
+    <a href="support.html">Suporte</a>
+    <a href="contact.html">Contato</a>
+    <a href="account.html" aria-label="Minha conta (placeholder)">Minha Conta</a>
+    <a href="cart.html">Carrinho</a>
+  </nav>
+</aside>
+
+<div class="container breadcrumbs watch-breadcrumbs" aria-label="Breadcrumb">
+  <a href="index.html">Inicio</a> <span aria-hidden="true">/</span>
+  <a href="cart.html">Carrinho</a> <span aria-hidden="true">/</span>
+  <span aria-current="page">Checkout</span>
+</div>
+
+<main id="conteudo" class="container">
+  <section class="section watch-checkout-section">
+    <div class="section-head watch-head checkout-head">
+      <h1>Finalizar compra</h1>
+      <a href="cart.html">Voltar ao carrinho</a>
+    </div>
+
+    <div class="cart watch-checkout-layout">
+      <section class="form checkout-form" aria-label="Formulario de checkout">
+        <p class="checkout-intro">Preencha seus dados para concluir o pedido. Campos marcados sao obrigatorios.</p>
+
+        <form data-checkout-form novalidate>
+          <h2 class="checkout-section-title">Dados do cliente</h2>
+          <div class="grid-2">
+            <div class="field">
+              <label class="label" for="nome">Nome completo *</label>
+              <input id="nome" class="input" name="name" type="text" autocomplete="name" required>
+              <div class="error" data-error></div>
+            </div>
+            <div class="field">
+              <label class="label" for="email">E-mail *</label>
+              <input id="email" class="input" name="email" type="email" autocomplete="email" required>
+              <div class="error" data-error></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label class="label" for="tel">Telefone (DDD) *</label>
+              <input id="tel" class="input" name="phone" type="tel" inputmode="tel" placeholder="(41) 99999-9999" required>
+              <div class="error" data-error></div>
+            </div>
+            <div class="field">
+              <label class="label" for="cpf">CPF (opcional)</label>
+              <input id="cpf" class="input" name="cpf" type="text" inputmode="numeric" placeholder="000.000.000-00">
+              <div class="help">Placeholder: valide e masque no backend quando integrar.</div>
+            </div>
+          </div>
+
+          <hr class="sep">
+
+          <h2 class="checkout-section-title">Endereco</h2>
+          <div class="grid-2">
+            <div class="field">
+              <label class="label" for="cep">CEP *</label>
+              <input id="cep" class="input" name="cep" type="text" inputmode="numeric" placeholder="80000-000" required>
+              <div class="error" data-error></div>
+            </div>
+            <div class="field">
+              <label class="label" for="estado">Estado *</label>
+              <select id="estado" class="select" name="state" required>
+                <option value="">Selecione</option>
+                <option>PR</option><option>SC</option><option>SP</option><option>RJ</option><option>MG</option>
+                <option>RS</option><option>BA</option><option>DF</option><option>GO</option><option>PE</option>
+              </select>
+              <div class="error" data-error></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label class="label" for="end">Endereco *</label>
+              <input id="end" class="input" name="address" type="text" autocomplete="street-address" required>
+              <div class="error" data-error></div>
+            </div>
+            <div class="field">
+              <label class="label" for="num">Numero *</label>
+              <input id="num" class="input" name="number" type="text" required>
+              <div class="error" data-error></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label class="label" for="bairro">Bairro *</label>
+              <input id="bairro" class="input" name="neighborhood" type="text" required>
+              <div class="error" data-error></div>
+            </div>
+            <div class="field">
+              <label class="label" for="cidade">Cidade *</label>
+              <input id="cidade" class="input" name="city" type="text" required>
+              <div class="error" data-error></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="comp">Complemento (opcional)</label>
+            <input id="comp" class="input" name="complement" type="text" placeholder="Apto, bloco, etc.">
+          </div>
+
+          <hr class="sep">
+
+          <h2 class="checkout-section-title">Pagamento (UI)</h2>
+          <div class="field checkout-payments">
+            <label class="label"><input type="radio" name="payment" value="pix"> PIX (placeholder)</label>
+            <label class="label"><input type="radio" name="payment" value="card"> Cartao (placeholder)</label>
+            <label class="label"><input type="radio" name="payment" value="boleto"> Boleto (placeholder)</label>
+          </div>
+
+          <button class="btn btn-primary" type="submit" data-checkout-submit>Finalizar pedido</button>
+          <div class="notice notice-error" data-checkout-error style="display:none; margin-top:12px"></div>
+          <p class="help" data-checkout-hint>Ao confirmar, voce sera redirecionado para a pagina de confirmacao.</p>
+        </form>
+      </section>
+
+      <aside class="summary checkout-summary" aria-label="Resumo">
+        <h2>Resumo do pedido</h2>
+        <form class="coupon" data-coupon-form>
+          <label class="sr-only" for="coupon">Cupom</label>
+          <div class="coupon-row">
+            <input id="coupon" name="coupon" type="text" autocomplete="off" placeholder="Cupom de desconto" />
+            <button type="submit" class="btn btn-secondary">Aplicar</button>
+          </div>
+          <p class="help" data-coupon-message></p>
+        </form>
+        <div class="field checkout-shipping-field" aria-label="Frete">
+          <div class="label" style="margin-bottom:6px">Frete</div>
+          <div data-shipping-options></div>
+          <p class="help" data-shipping-message></p>
+        </div>
+        <div data-order-summary></div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer watch-footer">
+  <div class="container footer-inner">
+    <div>
+      <h2>Atelier Horloger</h2>
+      <p class="footer-small">Relojoaria contemporanea com base classica.</p>
+      <p class="footer-small">Atendimento: seg a sex, 9h as 18h (placeholder)</p>
+    </div>
+    <div>
+      <h2>Ajuda</h2>
+      <p class="footer-small"><a href="contact.html">Contato</a></p>
+      <p class="footer-small"><a href="support.html">Atendimento especializado</a></p>
+      <p class="footer-small"><a href="faq.html">Perguntas frequentes</a></p>
+      <p class="footer-small"><a href="returns.html">Troca e devolucao</a></p>
+    </div>
+    <div>
+      <h2>Institucional</h2>
+      <p class="footer-small"><a href="about.html">Sobre a marca</a></p>
+      <p class="footer-small"><a href="shipping.html">Entrega e frete</a></p>
+      <p class="footer-small"><a href="terms.html">Termos de uso</a></p>
+      <p class="footer-small"><a href="privacy.html">Privacidade</a></p>
+    </div>
+    <div>
+      <h2>Redes</h2>
+      <p class="footer-small"><a href="#" aria-label="Instagram (placeholder)">Instagram</a></p>
+      <p class="footer-small"><a href="#" aria-label="Youtube (placeholder)">YouTube</a></p>
+      <p class="footer-small"><a href="#" aria-label="Pinterest (placeholder)">Pinterest</a></p>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:22px">
+    <div class="footer-small">? <span id="ano"></span> Atelier Horloger. Todos os direitos reservados.</div>
+  </div>
+</footer>
+<script>
+  document.getElementById('ano').textContent = new Date().getFullYear();
+</script>
+
+<script type="module" src="assets/js/entry/checkoutEntry.js"></script>
+</body>
+</html>
+
+
+
+
+

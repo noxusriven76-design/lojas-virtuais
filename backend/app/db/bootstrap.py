@@ -14,9 +14,26 @@ def bootstrap(db: Session) -> None:
     """
 
     # superuser
-    su = db.query(User).filter(User.email == "admin@local").first()
+    desired_email = "admin@local.com"
+    su = db.query(User).filter(User.email == desired_email).first()
     if not su:
-        su = User(email="admin@local", password_hash=hash_password("admin123"), name="Master", is_superuser=True)
+        old = db.query(User).filter(User.email == "admin@local").first()
+        if old:
+            old.email = desired_email
+            if not old.is_superuser:
+                old.is_superuser = True
+            su = old
+            db.add(old)
+            db.commit()
+            db.refresh(old)
+        else:
+            su = User(email=desired_email, password_hash=hash_password("admin123"), name="Master", is_superuser=True)
+            db.add(su)
+            db.commit()
+            db.refresh(su)
+
+    if su and not su.is_superuser:
+        su.is_superuser = True
         db.add(su)
         db.commit()
         db.refresh(su)

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200" role="img" aria-label="Polo Piquet Clássica">
+  <defs>
+    <pattern id="p18" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+      <line x1="0" y1="0" x2="0" y2="24" stroke="#e5e7eb" stroke-width="4"/>
+    </pattern>
+  </defs>
+  <rect width="900" height="1200" fill="#f4f4f5"/>
+  <rect width="900" height="1200" fill="url(#p18)" opacity="0.35"/>
+  <rect x="70" y="90" width="760" height="1020" rx="28" fill="#ffffff" opacity="0.75" stroke="#e5e7eb"/>
+  <text x="450" y="560" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="34" fill="#111" letter-spacing="0.6">Polo Piquet Clássica</text>
+  <text x="450" y="615" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="18" fill="#555">Imagem ilustrativa • Proporção 3:4</text>
+</svg>

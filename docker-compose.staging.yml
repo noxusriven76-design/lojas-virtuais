@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: ./backend
+    container_name: loja_api_staging
+    env_file:
+      - ./backend/.env.staging
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}?charset=utf8mb4}
+    ports:
+      - "8001:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: loja_mysql_staging
+    env_file:
+      - ./backend/.env.staging
+    ports:
+      - "3307:3306"
+    command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - mysql_staging_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  mysql_staging_data:

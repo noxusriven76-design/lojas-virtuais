@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -48,6 +49,7 @@ class OrderItemOut(BaseModel):
     product_id: int
     variant_id: int
     quantity: int
+    cancelled_quantity: int = 0
     unit_price: Decimal
     line_total: Decimal
     product_name: str
@@ -86,3 +88,49 @@ class OrderOut(BaseModel):
     @field_serializer("shipping_price", "subtotal", "discount", "total")
     def _ser_money(self, v: Decimal):
         return float(v)
+
+
+class AdminOrderOut(OrderOut):
+    user_id: int
+    user_name: str | None = None
+    user_email: str | None = None
+
+
+class AdminOrderListOut(BaseModel):
+    items: list[AdminOrderOut]
+    total: int
+    limit: int
+    offset: int
+
+
+class AdminOrderStatusUpdateIn(BaseModel):
+    status: str
+
+
+class AdminOrderEventOut(BaseModel):
+    id: int
+    event_type: str
+    from_status: str | None = None
+    to_status: str | None = None
+    note: str | None = None
+    meta: dict | None = None
+    user_id: int | None = None
+    created_at: datetime
+
+
+class AdminOrderTimelineOut(BaseModel):
+    items: list[AdminOrderEventOut]
+
+
+class AdminOrderNoteIn(BaseModel):
+    note: str
+
+
+class AdminOrderCancelItemIn(BaseModel):
+    order_item_id: int
+    quantity: int = Field(ge=1)
+
+
+class AdminOrderCancelIn(BaseModel):
+    reason: str
+    items: list[AdminOrderCancelItemIn] | None = None

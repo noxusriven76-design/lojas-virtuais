@@ -204,6 +204,7 @@ app.include_router(pages_router, include_in_schema=False)
 # Static uploads (local filesystem)
 Path(settings.uploads_dir).mkdir(parents=True, exist_ok=True)
 app.mount(settings.uploads_base_url, StaticFiles(directory=settings.uploads_dir, check_dir=False), name="uploads")
+app.mount("/site-assets", StaticFiles(directory="app/static/site_assets", check_dir=False), name="site-assets")
 
 
 @app.get("/health", include_in_schema=False)

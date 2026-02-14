@@ -47,6 +47,23 @@ class Product(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     variants = relationship("ProductVariant", cascade="all, delete-orphan")
+    images = relationship("ProductImage", cascade="all, delete-orphan", order_by="ProductImage.sort_order.asc()")
+
+
+class ProductImage(Base):
+    __tablename__ = "product_images"
+
+    __table_args__ = (
+        Index("ix_product_images_store_product", "store_id", "product_id"),
+        Index("ix_product_images_store_cover", "store_id", "is_cover"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    store_id: Mapped[int] = mapped_column(Integer, ForeignKey("stores.id"), index=True, nullable=False)
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey("products.id"), index=True, nullable=False)
+    image_url: Mapped[str] = mapped_column(String(500), nullable=False)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    is_cover: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 
 class ProductVariant(Base):

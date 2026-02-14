@@ -1,29 +1,117 @@
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ store.name }} - Loja</title>
+  <title>{{ store.name }} | Loja</title>
+  <meta name="description" content="{{ store.name }} - catalogo dinamico por loja" />
+  <link rel="stylesheet" href="{{ theme_asset_base }}/assets/css/styles.css" />
 </head>
-<body>
-  <h1>{{ store.name }}</h1>
-  <p>Site (MVP SSR). Este HTML é intencionalmente simples: foco em funcionalidade.</p>
+<body class="{% if theme == 'agro' %}agro-site{% elif theme == 'relogios' %}watch-site{% endif %}">
+<a class="skip-link" href="#conteudo">Pular para conteudo</a>
 
-  <h2>Categorias</h2>
-  <ul>
-    {% for c in categories %}
-      <li>{{ c.name }}</li>
-    {% endfor %}
-  </ul>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/site/{{ store.slug }}" aria-label="Pagina inicial da loja">
+      {% if store.logo_url %}
+      <img src="{{ store.logo_url }}" alt="{{ store.name }}" loading="lazy" />
+      {% else %}
+      <img src="{{ theme_asset_base }}/assets/img/brand/logo.svg" alt="{{ store.name }}" loading="lazy" />
+      {% endif %}
+    </a>
 
-  <h2>Produtos</h2>
-  <ul>
-    {% for p in products %}
-      <li>
-        <a href="/site/{{ store.slug }}/p/{{ p.id }}">{{ p.name }}</a>
-        - R$ {{ '%.2f'|format(p.base_price|float) }}
-      </li>
-    {% endfor %}
-  </ul>
+    <nav class="nav" aria-label="Categorias da loja">
+      {% for c in categories[:5] %}
+      <a href="#categoria-{{ c.id }}">{{ c.name }}</a>
+      {% endfor %}
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost btn-sm" href="#produtos">Produtos</a>
+    </div>
+  </div>
+</header>
+
+<main id="conteudo" class="container">
+  <section class="hero" aria-label="Destaques da loja">
+    <div class="hero-card">
+      <div>
+        <h1>{{ store.name }}</h1>
+        <p>
+          Loja dinamica conectada ao painel admin. Categorias e produtos desta pagina
+          refletem os dados desta loja.
+        </p>
+      </div>
+      <div class="trust" aria-label="Informacoes da loja">
+        <div class="pill">Slug: {{ store.slug }}</div>
+        <div class="pill">Categorias: {{ categories|length }}</div>
+        <div class="pill">Produtos: {{ products|length }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-label="Categorias" id="categorias">
+    <div class="section-head">
+      <h2>Categorias</h2>
+    </div>
+    <div class="chips">
+      {% if categories %}
+        {% for c in categories %}
+        <a id="categoria-{{ c.id }}" class="chip" href="#produtos">{{ c.name }}</a>
+        {% endfor %}
+      {% else %}
+        <p class="card-meta">Nenhuma categoria cadastrada para esta loja.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="section" aria-label="Produtos" id="produtos">
+    <div class="section-head">
+      <h2>Produtos</h2>
+    </div>
+    <div class="grid">
+      {% if products %}
+        {% for p in products %}
+        <article class="card">
+          <a class="card-media" href="/site/{{ store.slug }}/p/{{ p.id }}" aria-label="Abrir {{ p.name }}">
+            {% if p.image_url %}
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" />
+            {% else %}
+            <div style="height:100%;display:flex;align-items:center;justify-content:center;padding:12px;color:#666;font-size:13px;text-align:center;">Sem imagem</div>
+            {% endif %}
+          </a>
+          <div class="card-body">
+            <h3 class="card-title">{{ p.name }}</h3>
+            <div class="price">
+              <span class="now">R$ {{ '%.2f'|format(p.base_price|float) }}</span>
+            </div>
+            <div class="card-actions">
+              <a class="btn btn-primary btn-sm" href="/site/{{ store.slug }}/p/{{ p.id }}">Ver produto</a>
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      {% else %}
+        <p class="card-meta">Nenhum produto ativo cadastrado para esta loja.</p>
+      {% endif %}
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <h2>{{ store.name }}</h2>
+      <p class="footer-small">Conteudo dinamico por loja via /site/{{ store.slug }}</p>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:22px">
+    <div class="footer-small">(c) <span id="ano"></span> {{ store.name }}. Todos os direitos reservados.</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('ano').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>

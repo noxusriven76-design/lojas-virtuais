@@ -1,21 +1,76 @@
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ product.name }} - {{ store.name }}</title>
+  <title>{{ product.name }} | {{ store.name }}</title>
+  <meta name="description" content="{{ product.name }} - {{ store.name }}" />
+  <link rel="stylesheet" href="{{ theme_asset_base }}/assets/css/styles.css" />
 </head>
-<body>
-  <p><a href="/site/{{ store.slug }}">&larr; voltar</a></p>
-  <h1>{{ product.name }}</h1>
-  <p>{{ product.description }}</p>
-  <p>Preço base: R$ {{ '%.2f'|format(product.base_price|float) }}</p>
+<body class="{% if theme == 'agro' %}agro-site{% elif theme == 'relogios' %}watch-site{% endif %}">
+<a class="skip-link" href="#conteudo">Pular para conteudo</a>
 
-  <h2>Variantes</h2>
-  <ul>
-    {% for v in product.variants %}
-      <li>{{ v.color }} / {{ v.size }} - R$ {{ '%.2f'|format(v.price) }} (estoque: {{ v.stock }})</li>
-    {% endfor %}
-  </ul>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/site/{{ store.slug }}" aria-label="Voltar para a loja">
+      {% if store.logo_url %}
+      <img src="{{ store.logo_url }}" alt="{{ store.name }}" loading="lazy" />
+      {% else %}
+      <img src="{{ theme_asset_base }}/assets/img/brand/logo.svg" alt="{{ store.name }}" loading="lazy" />
+      {% endif %}
+    </a>
+    <div class="header-actions">
+      <a class="btn btn-ghost btn-sm" href="/site/{{ store.slug }}">Voltar para loja</a>
+    </div>
+  </div>
+</header>
+
+<main id="conteudo" class="container">
+  <nav class="breadcrumbs" aria-label="breadcrumb">
+    <a href="/site/{{ store.slug }}">Inicio</a> / <span>{{ product.name }}</span>
+  </nav>
+
+  <section class="product" aria-label="Detalhes do produto">
+    <article class="gallery">
+      <div class="gallery-main">
+        {% if product.image_url %}
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" />
+        {% else %}
+        <div style="height:100%;display:flex;align-items:center;justify-content:center;padding:12px;color:#666;font-size:14px;text-align:center;">Imagem nao cadastrada</div>
+        {% endif %}
+      </div>
+    </article>
+
+    <article class="product-info">
+      <h1>{{ product.name }}</h1>
+      {% if product.description %}
+      <p>{{ product.description }}</p>
+      {% endif %}
+
+      <hr class="sep" />
+
+      <div class="price">
+        <span class="now">R$ {{ '%.2f'|format(product.base_price|float) }}</span>
+      </div>
+
+      <div class="info-row">
+        <div class="panel">
+          <h3>Categoria</h3>
+          <p>
+            {% if product.category %}
+            {{ product.category.name }}
+            {% else %}
+            Nao definida
+            {% endif %}
+          </p>
+        </div>
+        <div class="panel">
+          <h3>Status</h3>
+          <p>{% if product.is_active %}Ativo{% else %}Inativo{% endif %}</p>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
 </body>
 </html>

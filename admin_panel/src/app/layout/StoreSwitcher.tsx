@@ -10,10 +10,12 @@ type Props = {
 
 export function StoreSwitcher({ stores, currentStoreId, onChange, disabled }: Props) {
   return (
-    <Space>
-      <Typography.Text type="secondary">Loja</Typography.Text>
+    <Space className="store-switcher" size={10}>
+      <Typography.Text type="secondary" className="store-switcher-label">
+        Loja
+      </Typography.Text>
       <Select
-        style={{ minWidth: 260 }}
+        style={{ minWidth: 280 }}
         value={currentStoreId ?? undefined}
         placeholder="Selecione uma loja"
         onChange={onChange}
@@ -26,4 +28,3 @@ export function StoreSwitcher({ stores, currentStoreId, onChange, disabled }: Pr
     </Space>
   );
 }
-
